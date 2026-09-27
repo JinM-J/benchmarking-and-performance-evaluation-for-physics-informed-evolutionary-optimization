@@ -1,6 +1,6 @@
 # F1–F11 problem gallery
 
-[Benchmark overview](../README.md) · [Problem definitions](../problems/README.md) · [Reference solutions](../reference/README.md)
+[Benchmark overview](../README.md) · [Problem definitions](problem_definitions.md) · [Reference solutions](../reference/README.md)
 
 This gallery pairs objective landscapes with views of the corresponding PDE state surfaces. Colors show the objective value F; the height coordinate u in a state-surface panel shows the PDE state. Parameterized problems include several fixed-parameter slices.
 

@@ -12,7 +12,8 @@ the numerical conventions used by the executable implementation. The
 and four design axes; the [problem gallery](../docs/problem_gallery.md) provides
 the corresponding manuscript illustrations.
 
-Select a problem below to read its complete definition. Bounds and transformations
+Read [all F1–F11 definitions in one document](../docs/problem_definitions.md),
+or select a problem below to read its individual definition. Bounds and transformations
 in this overview describe the supplied two- or three-coordinate implementation.
 
 | Paper / code | Decision bounds | Objective family | Algebraic constraints |
