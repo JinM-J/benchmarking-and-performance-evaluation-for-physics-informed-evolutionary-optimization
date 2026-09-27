@@ -1,0 +1,13 @@
+{
+  "f_star_exact": "3/4",
+  "f_star_decimal": "0.75",
+  "f_star_12dp": "0.750000000000",
+  "kind": "exact_equality_analytic_minimum",
+  "target": {
+    "x": "sqrt(1/2)",
+    "u": "1/2"
+  },
+  "reachability_example": {
+    "t": "0.24273898547378628"
+  }
+}

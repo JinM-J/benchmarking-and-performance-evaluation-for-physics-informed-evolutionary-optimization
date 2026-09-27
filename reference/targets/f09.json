@@ -1,0 +1,9 @@
+{
+  "f_star_decimal": "3",
+  "f_star_12dp": "3.000000000000",
+  "kind": "exact_goldstein_price_lower_bound",
+  "target": {
+    "u": "0",
+    "J": "0.7"
+  }
+}

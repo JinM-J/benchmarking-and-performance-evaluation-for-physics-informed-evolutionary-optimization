@@ -1,0 +1,9 @@
+{
+  "f_star_decimal": "0",
+  "f_star_12dp": "0.000000000000",
+  "kind": "exact_ackley_lower_bound",
+  "target": {
+    "u": "0",
+    "J": "0.5"
+  }
+}

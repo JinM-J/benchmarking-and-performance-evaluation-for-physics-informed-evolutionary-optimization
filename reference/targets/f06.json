@@ -1,0 +1,9 @@
+{
+  "f_star_decimal": "0",
+  "f_star_12dp": "0.000000000000",
+  "kind": "manufactured_solution_exact_minimum",
+  "target": {
+    "x": "0.1",
+    "t": "0.7"
+  }
+}

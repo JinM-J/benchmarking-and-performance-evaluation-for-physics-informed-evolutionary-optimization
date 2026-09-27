@@ -1,0 +1,12 @@
+{
+  "f_star_decimal": "0",
+  "f_star_12dp": "0.000000000000",
+  "kind": "exact_rastrigin_lower_bound",
+  "target": {
+    "x": "1.9004",
+    "u": "-1.153"
+  },
+  "reachability_example": {
+    "t": "0.03362608190173166"
+  }
+}

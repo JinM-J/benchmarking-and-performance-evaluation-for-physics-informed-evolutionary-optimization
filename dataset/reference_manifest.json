@@ -1,0 +1,148 @@
+[
+  {
+    "paper_problem": "F1",
+    "code_problem": "f01",
+    "file": "f01.npz",
+    "reference_file_sha256": "9d8fc4a5c0c89fa047e23896f51db021af97a4e0e03557a58fd1ea0e81bb1916",
+    "u_shape": [
+      6001,
+      80001
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 3841376844,
+    "legacy_file": "bench1_data.npz"
+  },
+  {
+    "paper_problem": "F2",
+    "code_problem": "f02",
+    "file": "f02.npz",
+    "reference_file_sha256": "89b78e8d86bae17d6076929e569cd15be745e1565c3fa78e25915f2ac39dfca4",
+    "u_shape": [
+      16001,
+      6401
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 667901902,
+    "legacy_file": "bench2_data.npz"
+  },
+  {
+    "paper_problem": "F3",
+    "code_problem": "f03",
+    "file": "f03.npz",
+    "reference_file_sha256": "e8e859df24c6447c1ff730a53568c11fc6665ac9c3487990fbf43a660136ce82",
+    "u_shape": [
+      20001,
+      20001
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 3200640844,
+    "legacy_file": "bench3_data.npz"
+  },
+  {
+    "paper_problem": "F4",
+    "code_problem": "f04",
+    "file": "f04.npz",
+    "reference_file_sha256": "1efb86f37e1105e5e92c4a53c9cbb27783bef925cbb40254dd0ee2869e924673",
+    "u_shape": [
+      1201,
+      640001
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 4586110867,
+    "legacy_file": "bench4_data.npz"
+  },
+  {
+    "paper_problem": "F5",
+    "code_problem": "f05",
+    "file": "f05.npz",
+    "reference_file_sha256": "8d0ce77945013c4d44bdb13ef2220d2d7453cfd1f7a2425a60173864eee7102b",
+    "u_shape": [
+      1001,
+      50001
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 308752873,
+    "legacy_file": "bench5_data.npz"
+  },
+  {
+    "paper_problem": "F6",
+    "code_problem": "f06",
+    "file": "f06.npz",
+    "reference_file_sha256": "33a055353567c473a55d80ffcb35edcafdebefd500ba105b8c346d64b3e56873",
+    "u_shape": [
+      24553,
+      9601
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 1886143366,
+    "legacy_file": "bench12_data.npz"
+  },
+  {
+    "paper_problem": "F7",
+    "code_problem": "f07",
+    "file": "f07.npz",
+    "reference_file_sha256": "758c175ab06f25be1146aa1704b688b480440710131fab0e07b901c19687c1d3",
+    "u_shape": [
+      1000,
+      1000
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 14495283,
+    "legacy_file": "bench6_data.npz"
+  },
+  {
+    "paper_problem": "F8",
+    "code_problem": "f08",
+    "file": "f08.npz",
+    "reference_file_sha256": "741210e24ba6c03ccfb81d98dc8761f5e5ce1873448e500a9133025c75b64b24",
+    "u_shape": [
+      200,
+      10001
+    ],
+    "u_dtype": "float64",
+    "reference_file_bytes": 15293950,
+    "legacy_file": "bench7_data.npz"
+  },
+  {
+    "paper_problem": "F9",
+    "code_problem": "f09",
+    "file": "f09.npz",
+    "reference_file_sha256": "21e0c3ebd511e913b737c822837c50201ada47ad90f17bacf59706ec7aaf7de6",
+    "u_shape": [
+      500,
+      2001,
+      1000
+    ],
+    "u_dtype": "float32",
+    "reference_file_bytes": 4002024566,
+    "legacy_file": "bench8_data.npz"
+  },
+  {
+    "paper_problem": "F10",
+    "code_problem": "f10",
+    "file": "f10.npz",
+    "reference_file_sha256": "50514e07494622a9f10dd0a5d33572bc33559aed4929c6ecfc76ac84baf88955",
+    "u_shape": [
+      1000,
+      2001,
+      1000
+    ],
+    "u_dtype": "float32",
+    "reference_file_bytes": 8004031957,
+    "legacy_file": "bench9_data.npz"
+  },
+  {
+    "paper_problem": "F11",
+    "code_problem": "f11",
+    "file": "f11.npz",
+    "reference_file_sha256": "ddc7866bd88afc3a51b86cada26eb39353730eb42f3f58d017dc51f7d64bca40",
+    "u_shape": [
+      500,
+      2001,
+      1000
+    ],
+    "u_dtype": "float32",
+    "reference_file_bytes": 4002025216,
+    "legacy_file": "bench10_data.npz"
+  }
+]

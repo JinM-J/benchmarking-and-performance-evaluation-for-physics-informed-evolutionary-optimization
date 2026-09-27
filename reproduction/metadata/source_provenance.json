@@ -1,0 +1,849 @@
+{
+  "schema": "source-compatibility-v1",
+  "description": "Exact source pairs for loading archived model snapshots. Differences identify interface or text changes; model evaluation is checked separately with saved prediction probes.",
+  "source_files": [
+    {
+      "file": "problems/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "problems/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "problems/base.py",
+      "source_sha256": "9b4f1a358d0a627c4b73fc4f3eef79f5eb1700e4fdb14eea662421620cde6870",
+      "current_file": "problems/base.py",
+      "current_sha256": "5d35feac7f08f35fb79d9af0a9be4586cc44d8259aef9b06bcbb4711c2afbf8a",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "problems/f01.py",
+      "source_sha256": "cc3bb511bf0525d759f4e201794fa8a0c17c78109d3126654aedc8a1bc5e158e",
+      "current_file": "problems/f01.py",
+      "current_sha256": "5b3812b584c6d316190cdc4d99d79d6e63326012280e9846d02a9daa271e4bd1",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "problems/f02.py",
+      "source_sha256": "dac3c53b228364d76f322e15f29a1f559c29e42a7dc460631690f15c1b88b218",
+      "current_file": "problems/f02.py",
+      "current_sha256": "2fdbe457a95639865dd66fd0feaa3d95c9ee9229280ae378b1b8dd0154450b24",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "problems/f03.py",
+      "source_sha256": "d7394343266ab81a896b64c5ecc0b18130e1bdd729c278d529e0bccc8c5e9671",
+      "current_file": "problems/f03.py",
+      "current_sha256": "afb27d6e6b9bc95a09bb49a8342b4bab95121e06c6f57b55bc1397bf2496cda6",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "problems/f04.py",
+      "source_sha256": "26606695707275511dbc2a4062b5f8e1fd79d06377882b0f44fc21601b7283b1",
+      "current_file": "problems/f04.py",
+      "current_sha256": "fb17d64ec7b3f6a226ab6c38fedcaaea665217654357dad02008db9a87c45345",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "problems/f05.py",
+      "source_sha256": "75812cc90a505cd32fb1e3514797fe50c6814e6f5fef1466290ad2bf0ed76aab",
+      "current_file": "problems/f05.py",
+      "current_sha256": "646ceb0d4ef377baadc3521acfdccfba20ad6984fbb6500b87fb6171a12d1cfc",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "problems/f06.py",
+      "source_sha256": "e4750e008cb4540e35c2fc2eb4b87669e6b6ed5ea276e485a53e26448eff8845",
+      "current_file": "problems/f07.py",
+      "current_sha256": "ed8feed11b6c2e9079e2e0985e4b0bfd1d4fe51035c7f00ee062e6042501ea62",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "problems/f07.py",
+      "source_sha256": "689c3878aeb8effd88c6fb12adb735b5db0cd969b0829dc3151ce9dd4e34d1a0",
+      "current_file": "problems/f08.py",
+      "current_sha256": "93de92ecaf1955ae4c4c57a47e6ab4df04ec343f34fdadaf162eaa1933aeb829",
+      "differences": [
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "problems/f08.py",
+      "source_sha256": "090543009db02577892e75f4ee4bb7e862a9abc61ebad84d4151bc970b253afa",
+      "current_file": "problems/f09.py",
+      "current_sha256": "d8b972edccb0228b6d3e886ced825a037f982c06ecdb969428424d5610b655b2",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "problems/f09.py",
+      "source_sha256": "9297612aef9d156088d02ffa4f379404857b6f949a1387531ef7b96dda6dc92e",
+      "current_file": "problems/f10.py",
+      "current_sha256": "c67033b2125e77528b423165ed00f83cd427fabcb8968af0e84d50f317b9aba9",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "problems/f10.py",
+      "source_sha256": "85884bafaee95c9fdf1d88f7b7ac6b63aa5a36428f04e2d0b58bfcd81146fca9",
+      "current_file": "problems/f11.py",
+      "current_sha256": "20c5b4d1d398a28be62a75a080236aed302212e6144a6defb9f662b341500145",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "problems/f12.py",
+      "source_sha256": "62e53c3eae3a5534c9aceea5480706d4bba510267218a23f3dda328b4a282ced",
+      "current_file": "problems/f06.py",
+      "current_sha256": "4b698d3c776c2bde74ae228d3d72141a14d0855035db15ef2007839198b5d94c",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "problems/regions.py",
+      "source_sha256": "1839731511eef0b629f1f9f078010d9813cb5fd3a6063850a52d215d9b526740",
+      "current_file": "problems/regions.py",
+      "current_sha256": "dea81520154a5756b4cd293e0326f065eaa88cc2b50c1db91b31127089a269d0",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "surrogates/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "surrogates/base.py",
+      "source_sha256": "3b841a205160046f35cdcd1ebbcf4123e4dac9eeed7d224405a3d276717feb95",
+      "current_file": "surrogates/base.py",
+      "current_sha256": "5309e4528245020d4218c170084899ca2f8d79ce20e02429286c5ecd1f9cb1d5",
+      "differences": [
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "surrogates/fno.py",
+      "source_sha256": "79464e2a5ce3679ad4ed2142d3efb2cd979343000cf714df595309bd626a6be2",
+      "current_file": "surrogates/fno.py",
+      "current_sha256": "1beacbec269b56a596328f8c27471c4c0abdd7cbc2b95ad7aad61c3cfd30d6b2",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/glosade_models.py",
+      "source_sha256": "e2135957cc700747cadb889a1e18c8d4ecde31a51df6ca89d23d68f81f46633c",
+      "current_file": "surrogates/glosade_models.py",
+      "current_sha256": "2bca11d7ab4e9713f46e4fadbaa03e1048d399bb5b4fa0efb9ff99b4ff3c2240",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/gp.py",
+      "source_sha256": "623774896669dd625009475520b789f3ddf71a1b1bfe84c32639e5c98919cc2d",
+      "current_file": "surrogates/gp.py",
+      "current_sha256": "5bd90f76e9ef959d66ea9fed7e14468f2e374f5dbc95ca8c291badfb574e18d5",
+      "differences": [
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "surrogates/mlp.py",
+      "source_sha256": "84fbfc6300133915644c6fe7f304f22e9e51f9b8f71dbeaffff1bcf2e7ea1aa9",
+      "current_file": "surrogates/mlp.py",
+      "current_sha256": "d31c5b537ebf62bd52948ba044f5948fb912f842ff3a0ed00f8af4a617f89111",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/pigp.py",
+      "source_sha256": "ef249230320e58bc9c9a130467831b31efed445ab90eddee54b00eeb7756386c",
+      "current_file": "surrogates/pigp.py",
+      "current_sha256": "a51cdc3ab1bf2c122ef1793e4dd05d17fb90b6ac078053985a485cc2ac7a1065",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "surrogates/pinn.py",
+      "source_sha256": "edd35e5042fe2f34e9ae5f6f32db39310baf0c88682283304ba0306cf899ac8e",
+      "current_file": "surrogates/pinn.py",
+      "current_sha256": "4bfd4f7857fdfb35ffd9fbd4c5c86a971bddf6bc89ed380f1c10c955f168e772",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "surrogates/pino.py",
+      "source_sha256": "b2dcbe91ab8eb7049a04f900d683388cf0af21db0c4ab16fc2769f19d097e1ad",
+      "current_file": "surrogates/pino.py",
+      "current_sha256": "1a09bfd48d5be91eea91043e7cd31761933031dbfdffcc9a0c543a14ab8dd0b5",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/rbfn.py",
+      "source_sha256": "f1090a1948d8db3894f07fa6e4a98dc03d35dc5dc74ea62ccede7e3af6f48263",
+      "current_file": "surrogates/rbfn.py",
+      "current_sha256": "a3bde96ba988a183f5dc9918fb6f947b010d1026b1ff5ad02b6f359ff8216fec",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/rbfn_field.py",
+      "source_sha256": "4c645b5db4b437404863bb678995414e05045064c57ad5e4ebba5b9b8008810a",
+      "current_file": "surrogates/rbfn_field.py",
+      "current_sha256": "335effeb480a1673c24f65abd5d6be0bd5155f70de3b691797f1404ba8dba028",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/kernels/__init__.py",
+      "source_sha256": "0a81a72d940a025cc4111929d98b7d2cab7b7bcca63a068afb9ce625ef14b4d0",
+      "current_file": "surrogates/kernels/__init__.py",
+      "current_sha256": "0a81a72d940a025cc4111929d98b7d2cab7b7bcca63a068afb9ce625ef14b4d0",
+      "differences": []
+    },
+    {
+      "file": "surrogates/kernels/base.py",
+      "source_sha256": "f1433ec2cbe537ad0fae376442df08fb706298dbeb38e4b12687c4ea0c8cb81f",
+      "current_file": "surrogates/kernels/base.py",
+      "current_sha256": "4864db0e097ad0b524abc61b1592835ece08a88a042dc6e923965d627ad0a124",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "surrogates/kernels/physics_kernel.py",
+      "source_sha256": "ddeffb311cf48b469312b42f980c19b4a215c5bdc4a023fcd8dceae454c3cb69",
+      "current_file": "surrogates/kernels/physics_kernel.py",
+      "current_sha256": "7eebeecd6ba5640f1d99b94c202ca3b7b93947e2c79f10dc4d1016fa77f12c85",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "optimizers/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "optimizers/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "optimizers/base.py",
+      "source_sha256": "44d0f9148fcba6ed156a8b91c36bad47a6d671f33acd941282da10e58d942992",
+      "current_file": "optimizers/base.py",
+      "current_sha256": "9512bd27d3a181ec1d7302fc35b6e448f960a5e0fe56bab2dd0df60e2fe04053",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "optimizers/cmaes.py",
+      "source_sha256": "b1b52003ae49f6d1abbf9cb0fb3dc00e3a63151c9d375829f92ad3099ffc0326",
+      "current_file": "optimizers/cmaes.py",
+      "current_sha256": "95e790590365015653a4c7adf174d74bca22f302760913748073165f30df278c",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "optimizers/de.py",
+      "source_sha256": "ea5e2e220715094c47c9430a1f7014ff1472eef50314efdbb413f325c05cfc4b",
+      "current_file": "optimizers/de.py",
+      "current_sha256": "606d8e3cb3393d6de6b36f446a42aa3858b533ae72a1d3642b005ef6712789ff",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "optimizers/pso.py",
+      "source_sha256": "0659a9bf77994578ee820b0a2ec82f238dae5d0de145650accf3adfaa53e39e3",
+      "current_file": "optimizers/pso.py",
+      "current_sha256": "12d85a68218cab8075fc5100963b46af314462c1fbe75cc16a51e906d6a8fbea",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "optimizers/sade_de.py",
+      "source_sha256": "9bcf01b50e822a3ebda89cd37cfaadbf30d5058c9fd8e5386ac04987d8b6ed3c",
+      "current_file": "optimizers/sade_de.py",
+      "current_sha256": "07d5879a5e2f5002177c0e845c1b6c2edda736b0e032900d01dbc4e97dbdc578",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "methods/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "methods/base.py",
+      "source_sha256": "004cc2d5e6d15e13b76557781f94901c70bb44a5932ed83c041d5293cac53a4b",
+      "current_file": "methods/base.py",
+      "current_sha256": "d86be4ceea4b97f47a6e746ef01291c6b42cafded882d0cd174fdd4d36da069c",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "methods/glosade.py",
+      "source_sha256": "40c8dd216aa349b2bacc84f2e1512a0e8a95a33357ab9ad5b38f2720680e5f89",
+      "current_file": "methods/glosade.py",
+      "current_sha256": "067b3e1ca51903001e9fdd64df0ef7f5319c88daf25d388099eac3b4d284ae8c",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "methods/gp_cmaes.py",
+      "source_sha256": "2b7c83ae3fd1622773735ab29f3362e4abf6344e281996a9db4f5e83473d5c58",
+      "current_file": "methods/gp_cmaes.py",
+      "current_sha256": "75178239986676827a1fd9fdc53130a941432b66ab25d75a6b9e2c79177f98cc",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/gp_de.py",
+      "source_sha256": "5bd99f1833678dcaafd4f952c239df79794f6726897f93c6ab390ff5654c682f",
+      "current_file": "methods/gp_de.py",
+      "current_sha256": "af9fab6ef147961dec9ba0e0ea305323e8b95c0e0d699e55e765ff91a925e197",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/gp_pso.py",
+      "source_sha256": "18111e7b2e117b57d5169804c4260a37995f2127d95098a33bca3a3157206715",
+      "current_file": "methods/gp_pso.py",
+      "current_sha256": "f160770479e706ac1deff5f52802b96708bac241a8a61c4be1702f7870c1a325",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/ji_saea.py",
+      "source_sha256": "ed99be48864ad8671e05e855e745b9b38b25eda917f09241bec457637c3a569a",
+      "current_file": "methods/ji_saea.py",
+      "current_sha256": "8a88aa5bab7edb751aa45b297fee61518b48ba60365f69dc8ea9a717dab19e95",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/mlp_cmaes.py",
+      "source_sha256": "933c8d359f6abbffd5e2092ef5676b598be5d21c3907fe9246427c9d6d401f31",
+      "current_file": "methods/mlp_cmaes.py",
+      "current_sha256": "9e5266599ea6fc181ec4d40994e24df30f71ab8f3c0cf55eb6d36427d9c06464",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/mlp_de.py",
+      "source_sha256": "006f9c8dc57e63d46afe60e722be8076e47d07b0f2bbad82d3d86bfb918a37d1",
+      "current_file": "methods/mlp_de.py",
+      "current_sha256": "d6378faf08e6c7469c490f302788c0c6b68344c41a2409b881af2ceecfe122b6",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/mlp_pso.py",
+      "source_sha256": "3d4122adf99277fa7b3d2087caf10dde1002054b9560759364bf6481eeb426d0",
+      "current_file": "methods/mlp_pso.py",
+      "current_sha256": "5b527752a9c8de8c33c32f6ba2c738ee7a6f767cd4e4b77e3de67ff830168616",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pigp_cmaes.py",
+      "source_sha256": "76164e02579cf425f7ef5bf2ddace427642fc49d1362a2e3eb15bbcb9b7fdacb",
+      "current_file": "methods/pigp_cmaes.py",
+      "current_sha256": "16207ea07c8a7990f1771313092e103146f8a661f044cd79cdd12bed9efc8928",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pigp_de.py",
+      "source_sha256": "5081e5309f618bbd40fd07cc0e773be59668b2fcba50d8e19fafa634bdc4be56",
+      "current_file": "methods/pigp_de.py",
+      "current_sha256": "83409154d6ad1fb789299cfdb7b0d44c2bb06c15770d1b4b4578872588767da6",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pigp_pso.py",
+      "source_sha256": "c5748e665fe5b28db7cdb6e738b804581d49133e2f844b15770e1fe53b439318",
+      "current_file": "methods/pigp_pso.py",
+      "current_sha256": "28cf62e31992cb4bc2ec23b37825e100540f6adfa34a6b17449fc3bf928c80d2",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pinn_cmaes.py",
+      "source_sha256": "672ee0e1993cb0e1b0dde814c5e618534de3c1f498a10958e2587c6ccd247e7c",
+      "current_file": "methods/pinn_cmaes.py",
+      "current_sha256": "f0024e2769e0257f2c564814148ad8404f44faaf1a02146985627b9405250774",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pinn_de.py",
+      "source_sha256": "bbc20a538a4a1907f351f73f43c5024de60e8a9dd40be1a502ce1a8f7ac70fec",
+      "current_file": "methods/pinn_de.py",
+      "current_sha256": "2f3ab1fc85b24d7ae4eb054e14e059319ee0cbd8b76999b97c336af2ffdc26bb",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pinn_pso.py",
+      "source_sha256": "9171769b4140f5e171e7ada550825668543c69e23f9219908173ece052d3dcc0",
+      "current_file": "methods/pinn_pso.py",
+      "current_sha256": "e1421b45fee3aba760387327cda360cebb25f8d7664f07d01824846fff6a9291",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pino_cmaes.py",
+      "source_sha256": "d63d0f359cf84618873604a8cb1e856575dca983fafe48252f713541a732be3f",
+      "current_file": "methods/pino_cmaes.py",
+      "current_sha256": "4e27c61e74cee3208e99d397f98e874e0efceff48def8613161856bfcd5f720f",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pino_de.py",
+      "source_sha256": "9895ad5d75cbd91600a00644412ac0abce931fc9495e10d0bee809664f5c99d2",
+      "current_file": "methods/pino_de.py",
+      "current_sha256": "295f81cb34381c1e26838d8e83caa2339cba8e2bb8a73d7e4ffa9997e9565413",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/pino_pso.py",
+      "source_sha256": "c9b4d1ce8d5f0b579950697815de836ff55e6f5e290d584df747df0b5ff6c5f1",
+      "current_file": "methods/pino_pso.py",
+      "current_sha256": "fccfc05dd4a9894462854239151007b86b5ce87103c560beed6d1ddf33650ecd",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/policies.py",
+      "source_sha256": "5419f05ee75cb27af72d3b5dceee5b1c858457094da46836dfa31e4bef4a8cfc",
+      "current_file": "methods/policies.py",
+      "current_sha256": "9fff8f437f1928929a090d9e57fbc71fdf606692d103bfbff23b76b9e2d89b8f",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/rbfn_cmaes.py",
+      "source_sha256": "17cd1d0d037a4e3567e043479aeb86a1c8139ce6551639615669962d2c6d62d4",
+      "current_file": "methods/rbfn_cmaes.py",
+      "current_sha256": "afecc0a337b2c85ec4f314c74845b7058615ef5dba8db9db95b91653926f8b93",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/rbfn_de.py",
+      "source_sha256": "9f2e3b4b9c94e5453263ba7c5c53279924c3dc7665fa958026107aeca0c62d38",
+      "current_file": "methods/rbfn_de.py",
+      "current_sha256": "ce3635124caa6d62a86b0dc235f1c53f6b05246ad759e784a1ef56a837e9f30d",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "methods/rbfn_pso.py",
+      "source_sha256": "6237db369a2b527e17e1db905c84892c31eacc932ce588629eaaf95e193b6de9",
+      "current_file": "methods/rbfn_pso.py",
+      "current_sha256": "0ca153cd629270444756db19d4a96df5d3769faae544dffc5ec10a8fee97a7fa",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "evaluation/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "evaluation/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "evaluation/decision_eval.py",
+      "source_sha256": "c46b99eb6a2def722b746c39cba89632ee439ab5e2c7367ed992aec39083ccfd",
+      "current_file": "evaluation/decision_eval.py",
+      "current_sha256": "c006b2b75e23b4e50eae5ae2061bf1239318be86d095b5e835cea4bef0e0ccde",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "evaluation/oracle.py",
+      "source_sha256": "5c467a5a71e42e623aa162e40a290e45ddb454716ab7a7388f637ec6e279a46e",
+      "current_file": "evaluation/oracle.py",
+      "current_sha256": "5d4d7de9267d7a88f23f81b4650a24f4d43aa1a3905309a0ca188da61ab98ea1",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "evaluation/reference.py",
+      "source_sha256": "ab0f6e09423d3872830ff05ca96443c0b1ef33a61bcd65bba2538461814b562c",
+      "current_file": "evaluation/reference.py",
+      "current_sha256": "c8c6dd70e4bd333c9e35a570540eb088aab18921ada6875084962e6fe9c05810",
+      "differences": [
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "evaluation/metrics/__init__.py",
+      "source_sha256": "aca14376f23de050340a2cd6da38ac215d70dc18f4fdf4035aed3d68f1c7997f",
+      "current_file": "evaluation/metrics/__init__.py",
+      "current_sha256": "9f32767a42ceccd3ea7752ee61e4198573507e146ed69b92f9f46bf625ccf16c",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "evaluation/metrics/constraint.py",
+      "source_sha256": "17906ec046be6cb4d398afd9592be31396f9c16eecb899f3359e940a77c1d023",
+      "current_file": "evaluation/metrics/constraint.py",
+      "current_sha256": "2d882e665dc900d21e6171a10e1464496126d7b46e0330008033b3624e78aafa",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "evaluation/metrics/grid.py",
+      "source_sha256": "a5a12b7c3903a4b4aca9b560e98412fd9674c6f8f86e12bdfc741b8b642b7d9e",
+      "current_file": "evaluation/metrics/grid.py",
+      "current_sha256": "905dcbcb1e0b9507b93687e6b15a83505a15c7905bd0943705c4af62fa4a5827",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "evaluation/metrics/optimization.py",
+      "source_sha256": "4cd453c45e15670259758fac86e8dfbf65d21bcaedd13542917f166f4cedd072",
+      "current_file": "evaluation/metrics/optimization.py",
+      "current_sha256": "dfbc59a91b9f11d61ab3e3f4c9649e4bb5c889bd020dcbc569f80c352f5e7041",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "evaluation/metrics/surrogate.py",
+      "source_sha256": "889a4bad2a84f0b3978cce6c9e85ef9d8f392e19fb45003635cd22396786a9af",
+      "current_file": "evaluation/metrics/surrogate.py",
+      "current_sha256": "b97c3f32cae513cc809c69aefa63d48896da58054dc9dc359fbae51b5653fca5",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "core/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "core/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "core/experiment.py",
+      "source_sha256": "4efbecc7b2729820447c23f539569fdc09739f456eb682f2b4a1bd5971c1d88f",
+      "current_file": "core/experiment.py",
+      "current_sha256": "ab8ce9787e9aa58e0b48e7f301031c3e86be998b503ca9e1b98560c8166dcc7a",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "core/registry.py",
+      "source_sha256": "6f0cbe9d91e2955eb7ada0e4977b9695193dfd6da8b0c41a1e0a6a7b2be0d2a2",
+      "current_file": "core/registry.py",
+      "current_sha256": "fda4c849e35d8bf21e92ca45c3cfc4e42a22b29a0e4a2e84ebe5231f0821bc1f",
+      "differences": [
+        "component_registry",
+        "diagnostic_messages",
+        "documentation",
+        "file_paths",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "core/version.py",
+      "source_sha256": "a36d1cc50bff9ef52553fb0f6e276028cf979d155df419ec7646acc00cd3c331",
+      "current_file": "core/version.py",
+      "current_sha256": "3b2817a06a8689c6de1214dee821a1bda366f4982d9d320dda935a6dff8ef80e",
+      "differences": [
+        "documentation"
+      ]
+    },
+    {
+      "file": "dataset/bench1_data.py",
+      "source_sha256": "df6c3697e89e0ce00d30b8f83d0d52cc1c354b7cff52c822e8d14f7a292cf41e",
+      "current_file": "dataset/generate_f01.py",
+      "current_sha256": "c9ef20c9ef5292d8661e2ea041181c68b50a3b5b0c83f65ac112d57a1f6bb708",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths"
+      ]
+    },
+    {
+      "file": "dataset/bench2_data.py",
+      "source_sha256": "b552e79f05c59faf25e573a59233454c61ffc1cc2cc5339234922eb1814be1b9",
+      "current_file": "dataset/generate_f02.py",
+      "current_sha256": "be4af85c8b13a77d0992d281487bc48c37eda693d973e18c3bfa8038f8dd371b",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths"
+      ]
+    },
+    {
+      "file": "dataset/bench3_data.py",
+      "source_sha256": "3b66a216ac99ae27ce78b93602350998f7cb546f275ac657dda62fac86a2d37a",
+      "current_file": "dataset/generate_f03.py",
+      "current_sha256": "465c0c34833d762f165a49d3ea5aa885dd9ca8d8df94c8a33a7c7f0c8823f0f9",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths"
+      ]
+    },
+    {
+      "file": "dataset/bench4_data.py",
+      "source_sha256": "fc7207e2b370a839b35bacae4914c0bdeb2950c49a0c86d69ffbb9e6364cec5d",
+      "current_file": "dataset/generate_f04.py",
+      "current_sha256": "45d17861793a907f0845962e39647689161513822384e06fb4fb427e8bcce894",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths"
+      ]
+    },
+    {
+      "file": "dataset/bench5_data.py",
+      "source_sha256": "42756c93d1285ca0ea0dcc035fd815e95dcaa2829bf88b4311e2570bb526ea25",
+      "current_file": "dataset/generate_f05.py",
+      "current_sha256": "41cabd6f1f046c7922f7fd141b7e4bc321322473c187cfd0aaf7c02dd883c3be",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths"
+      ]
+    },
+    {
+      "file": "dataset/bench6_data.py",
+      "source_sha256": "4b68989331a768ea6e18e1bb3c88de7bda1388139584c049cd1549f63022fa18",
+      "current_file": "dataset/generate_f07.py",
+      "current_sha256": "dbdcdf91184bc0ef20e4860e0fc0f964af7938d87d967fac4eba9a5f2b05e5d9",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "dataset/bench7_data.py",
+      "source_sha256": "b6056db4a8d70bd40d929fba614aa84c019950268b1efd899cb8eabf02113a47",
+      "current_file": "dataset/generate_f08.py",
+      "current_sha256": "331acdb876a069080fd1afe8793ce3cadc87c9d0a4d7b00ed11a610f181f2c62",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "dataset/bench8_data.py",
+      "source_sha256": "bda445fc96c90ccc62e83813ddd46611a148bfa8fdd785dbf41cf23e0e19ae43",
+      "current_file": "dataset/generate_f09.py",
+      "current_sha256": "353f1f30f0a24246f12e7507248327e76ad9f3ef195be09473f80f2ef1262dd5",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "dataset/bench9_data.py",
+      "source_sha256": "995b87ac6598833f6283eb3149b3060c0e611a6c55413b7c01eae0348cc1fcbb",
+      "current_file": "dataset/generate_f10.py",
+      "current_sha256": "98b8280148c35f8f3fe6d2ec264c0061fa8484f78134b7baba1bd1e507d401d4",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "dataset/bench10_data.py",
+      "source_sha256": "c96d83656062476a0903cb517875d36ad22f67ef49ba2fedf5ac3b67ff9e9723",
+      "current_file": "dataset/generate_f11.py",
+      "current_sha256": "b40b40d36ff21c44bc400fd2f849277ec3fb9e13773c91dc6d658784f2e0e5d9",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "dataset/bench12_data.py",
+      "source_sha256": "03824db48b114decd057c03204b611168d9f4a7d43a3cd7a1dce60750165925c",
+      "current_file": "dataset/generate_f06.py",
+      "current_sha256": "bec6d4582105e247f225bcd556bc22cf5b983406a7588846ad1453accff1a425",
+      "differences": [
+        "diagnostic_messages",
+        "documentation",
+        "file_paths",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "protocols/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "protocols/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "protocols/base.py",
+      "source_sha256": "4e8403e3933f4bf8d3d4f781b292f9581dfc44aca78c3a72d3ba64f24a476032",
+      "current_file": "protocols/base.py",
+      "current_sha256": "e55518200be8d63876f18383b6e587be1deb9e604bf11f82c40be92d321f1e9b",
+      "differences": [
+        "configuration_keys",
+        "documentation",
+        "problem_identifiers"
+      ]
+    },
+    {
+      "file": "experiments/__init__.py",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "current_file": "experiments/__init__.py",
+      "current_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "differences": []
+    },
+    {
+      "file": "experiments/run.py",
+      "source_sha256": "879797d9c442515d4ae1c5da6514836893655791a9de64e0aa8afc570cb7a99d",
+      "current_file": "experiments/run.py",
+      "current_sha256": "3d6936bf1a1fc61bd12eebbc6b675067c8be58f52ec7c360f3550a76aa41c057",
+      "differences": [
+        "command_line_interface",
+        "diagnostic_messages",
+        "documentation",
+        "file_paths"
+      ]
+    },
+    {
+      "file": "experiments/export_surrogate_field.py",
+      "source_sha256": "a909762b22ab32b551ac0f22d30822ca94f03c84cfc23cc4cd9621d270889650",
+      "current_file": "experiments/export_surrogate_field.py",
+      "current_sha256": "7e0e5bd9e08dd10dc609b041476cc37d8cefde54fee627d3833b01cd00ac47a9",
+      "differences": [
+        "diagnostic_messages",
+        "documentation"
+      ]
+    },
+    {
+      "file": "experiments/surrogate_checkpoint.py",
+      "source_sha256": "a56a5ad8d316117ce7526cca093ec43c4ec7a856c6f8c887cd0e107590ccc4a5",
+      "current_file": "experiments/surrogate_checkpoint.py",
+      "current_sha256": "6eb3d81934870d905f6422b780dd21cf12ac8e2e0e7e07661cdf1cf61a4ca0b1",
+      "differences": [
+        "checkpoint_serialization",
+        "diagnostic_messages",
+        "documentation",
+        "problem_identifiers"
+      ]
+    }
+  ]
+}

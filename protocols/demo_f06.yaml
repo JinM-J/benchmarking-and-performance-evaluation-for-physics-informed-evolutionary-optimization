@@ -1,0 +1,23 @@
+# Small end-to-end installation demonstration; NOT the paper's F6 experiment.
+# Reduced manufactured field is generated only by examples/demo_f06.py explicitly.
+protocol:
+  name: demo_f06
+  description: Demonstration only; GP on a coarse analytic F6 field, 12 state queries.
+problems:
+  F06:
+    pop_size: 12
+    maxgen: 4
+    init_points: 6
+    update_interval: 2
+    hf_points_per_update: 3
+    penalty_min: 10.0
+    penalty_max: 100.0
+    hf_query_budget: 12
+    mse_grid_nx: 20
+    mse_grid_nt: 20
+    update_policy:
+      type: periodic_topk
+    surrogates:
+      gp:
+        length_scale_bounds: [0.001, 100.0]
+        white_kernel: 1.0e-08
