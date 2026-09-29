@@ -68,8 +68,8 @@ and reference-solution calculations are collected in the
 
 ### Visual examples
 
-These earlier manuscript illustrations show two contrasting problem landscapes.
-Original plotted values and reference markers are retained; numerical definitions
+These figures show two contrasting problem landscapes. Variable labels and
+representative reference markers follow the manuscript. Numerical definitions
 and verification scope are given in the full problem definitions.
 
 | F6: localized objective valley | F7: perforated spatial domain |

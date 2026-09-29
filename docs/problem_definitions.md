@@ -8,10 +8,11 @@ The following sections present the manuscript's problem descriptions, PDEs,
 initial/boundary conditions, objectives, constraints and reference solutions.
 Implementation conventions are stated separately within each problem.
 
-**Figure version:** the illustrations below are the earlier figures distributed
-with the manuscript revision of 26 September 2026. Their plotted values and star
-markers are retained; the mathematical definitions and reference calculations
-state the numerical formulation and verification scope.
+**Figure version:** updated on 29 September 2026 using the stored reference
+fields. Variable labels and representative reference markers follow the
+manuscript. The [problem gallery](problem_gallery.md) describes plotting
+conventions, including F2's state-surface display band. The definitions and
+reference calculations state the numerical formulation and verification scope.
 
 ## F1
 
@@ -108,7 +109,7 @@ $F_2$ embeds the wave equation into a quadratic function, introducing a three-di
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F2 objective landscape](figures/f02_landscape.png) | ![F2 PDE state geometry](figures/f02_geometry.jpg) |
+| ![F2 objective landscape](figures/f02_landscape.png) | ![F2 PDE state geometry](figures/f02_geometry.png) |
 
 ### Problem definition
 
@@ -202,7 +203,7 @@ $F_3$ embeds a nonlinear reaction-diffusion PDE into a shifted Rastrigin functio
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F3 objective landscape](figures/f03_landscape.png) | ![F3 PDE state geometry](figures/f03_geometry.jpg) |
+| ![F3 objective landscape](figures/f03_landscape.png) | ![F3 PDE state geometry](figures/f03_geometry.png) |
 
 ### Problem definition
 
@@ -279,7 +280,7 @@ $F_4$ considers a control-driven reaction-diffusion PDE with spatially distribut
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F4 objective landscape](figures/f04_landscape.jpg) | ![F4 PDE state geometry](figures/f04_geometry.png) |
+| ![F4 objective landscape](figures/f04_landscape.png) | ![F4 PDE state geometry](figures/f04_geometry.png) |
 
 ### Problem definition
 
@@ -367,7 +368,7 @@ $F_5$ extends a test function from the CEC2006 competition by replacing one deci
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F5 objective landscape](figures/f05_landscape.png) | ![F5 PDE state geometry](figures/f05_geometry.jpg) |
+| ![F5 objective landscape](figures/f05_landscape.png) | ![F5 PDE state geometry](figures/f05_geometry.png) |
 
 ### Problem definition
 
@@ -590,7 +591,7 @@ $F_8$ introduces an equality constraint $h=u-x_1^2=0$, governed by a Kuramoto-Si
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F8 objective landscape](figures/f08_landscape.png) | ![F8 PDE state geometry](figures/f08_geometry.jpg) |
+| ![F8 objective landscape](figures/f08_landscape.png) | ![F8 PDE state geometry](figures/f08_geometry.png) |
 
 ### Problem definition
 
@@ -664,7 +665,7 @@ In F9, the PDE solution is directly influenced by the decision variable $\eta$. 
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F9 objective landscape](figures/f09_landscape.png) | ![F9 PDE state geometry](figures/f09_geometry.jpg) |
+| ![F9 objective landscape](figures/f09_landscape.png) | ![F9 PDE state geometry](figures/f09_geometry.png) |
 
 ### Problem definition
 
@@ -762,7 +763,7 @@ F10 parameterizes the viscous Burgers equation with the viscosity coefficient $\
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F10 objective landscape](figures/f10_landscape.jpg) | ![F10 PDE state geometry](figures/f10_geometry.jpg) |
+| ![F10 objective landscape](figures/f10_landscape.png) | ![F10 PDE state geometry](figures/f10_geometry.png) |
 
 ### Problem definition
 
@@ -989,4 +990,3 @@ Consequently, $J=0.5$ is unreachable for the exact continuous integral. The cont
 [The generator](../dataset/generate_f11.py) uses source half-steps and FFT diffusion, with 500 spatial points, 2001 time points, and 1000 parameter values. Spatial points exclude the right endpoint, $\Delta x=0.008$, and $\Delta t=0.001$. Both source half-steps use the source at the old time; the splitting label alone does not establish second-order temporal accuracy.
 
 The state and coordinate arrays are float32, with layout `(x, t, mu)`, and are loaded from `dataset/f11.npz`. See [data acquisition and validation](../dataset/README.md) and [reference hashes and array metadata](../dataset/reference_manifest.json). Precomputed fields are distributed separately from the source repository.
-

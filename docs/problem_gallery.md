@@ -4,7 +4,7 @@
 
 This gallery pairs objective landscapes with views of the corresponding PDE state surfaces. Colors show the objective value F; the height coordinate u in a state-surface panel shows the PDE state. Parameterized problems include several fixed-parameter slices.
 
-**Figure version:** earlier manuscript illustrations distributed with the revision source on 26 September 2026. Original plot labels, color scales and star markers are retained. Use the linked problem definitions for the current equations and domains, and the reference scripts for numerical values and verification; the plotted stars alone do not establish optimality.
+**Figure version:** updated on 29 September 2026 using the stored reference fields. Variable labels follow the manuscript equations and figure captions. Stars mark representative points checked against the manuscript reference targets; they do not by themselves establish global optimality. Color limits may use quantiles and need not equal the reference objective value.
 
 [F1](#f1) | [F2](#f2) | [F3](#f3) | [F4](#f4) | [F5](#f5) | [F6](#f6) | [F7](#f7) | [F8](#f8) | [F9](#f9) | [F10](#f10) | [F11](#f11)
 
@@ -20,13 +20,13 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 ## F2
 
-**Wave equation.** Equality tolerance bands couple the wave state to an additional algebraic variable. The original panels use x1 for x and x2 for the algebraic variable z.
+**Wave equation.** Equality tolerance bands couple the wave state to an additional algebraic variable. The decision-space plot has axes x1, t and x2, with color representing the objective. Here x2 is the algebraic variable called z in the code. Its sampled points satisfy the implemented feasibility rule. The state panels retain x2 slices 0, 3.5521711548, 20/3 and 10. Their colored points use the display band |h1|, |h2| <= 0.5; this is wider than the problem's equality tolerance of 0.1. The last two slices show only the state background because no points satisfy that display band.
 
 [Definition](problems/f02.md) · [Reference calculation](../reference/f02.py)
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F2 objective landscape](figures/f02_landscape.png) | ![F2 PDE state geometry](figures/f02_geometry.jpg) |
+| ![F2 objective landscape](figures/f02_landscape.png) | ![F2 PDE state geometry](figures/f02_geometry.png) |
 
 ## F3
 
@@ -36,7 +36,7 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F3 objective landscape](figures/f03_landscape.png) | ![F3 PDE state geometry](figures/f03_geometry.jpg) |
+| ![F3 objective landscape](figures/f03_landscape.png) | ![F3 PDE state geometry](figures/f03_geometry.png) |
 
 ## F4
 
@@ -46,7 +46,7 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F4 objective landscape](figures/f04_landscape.jpg) | ![F4 PDE state geometry](figures/f04_geometry.png) |
+| ![F4 objective landscape](figures/f04_landscape.png) | ![F4 PDE state geometry](figures/f04_geometry.png) |
 
 ## F5
 
@@ -56,7 +56,7 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F5 objective landscape](figures/f05_landscape.png) | ![F5 PDE state geometry](figures/f05_geometry.jpg) |
+| ![F5 objective landscape](figures/f05_landscape.png) | ![F5 PDE state geometry](figures/f05_geometry.png) |
 
 ## F6
 
@@ -86,7 +86,7 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F8 objective landscape](figures/f08_landscape.png) | ![F8 PDE state geometry](figures/f08_geometry.jpg) |
+| ![F8 objective landscape](figures/f08_landscape.png) | ![F8 PDE state geometry](figures/f08_geometry.png) |
 
 ## F9
 
@@ -96,7 +96,7 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F9 objective landscape](figures/f09_landscape.png) | ![F9 PDE state geometry](figures/f09_geometry.jpg) |
+| ![F9 objective landscape](figures/f09_landscape.png) | ![F9 PDE state geometry](figures/f09_geometry.png) |
 
 ## F10
 
@@ -106,7 +106,7 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 | Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F10 objective landscape](figures/f10_landscape.jpg) | ![F10 PDE state geometry](figures/f10_geometry.jpg) |
+| ![F10 objective landscape](figures/f10_landscape.png) | ![F10 PDE state geometry](figures/f10_geometry.png) |
 
 ## F11
 
