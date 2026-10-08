@@ -8,7 +8,7 @@ The following sections present the manuscript's problem descriptions, PDEs,
 initial/boundary conditions, objectives, constraints and reference solutions.
 Implementation conventions are stated separately within each problem.
 
-**Figure version:** F6 objective panels updated on 8 October 2026; the other
+**Figure version:** F6 panels updated on 8 October 2026; the other
 figures were updated on 29 September 2026 using the stored reference
 fields. Variable labels and representative reference markers follow the
 manuscript. The [problem gallery](problem_gallery.md) describes plotting
@@ -443,9 +443,9 @@ See the [dataset instructions](../dataset/README.md) for data preparation and th
 
 $F_6$ couples an advection-diffusion equation with an objective that measures the state deviation from a time-dependent background. The objective locates the right-side response at 5% of the packet amplitude around a target time.
 
-| Objective landscape / decision-space slices | Objective surface |
+| Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 objective surface](figures/f06_geometry.png) |
+| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 PDE state geometry](figures/f06_geometry.png) |
 
 ### Problem definition
 

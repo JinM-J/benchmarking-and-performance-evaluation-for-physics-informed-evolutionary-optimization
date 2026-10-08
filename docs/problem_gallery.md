@@ -2,7 +2,7 @@
 
 [Benchmark overview](../README.md) · [Problem definitions](problem_definitions.md) · [Reference solutions](../reference/README.md)
 
-This gallery pairs objective landscapes with views of the corresponding PDE state surfaces. Colors show the objective value F; the height coordinate u in a state-surface panel shows the PDE state. Parameterized problems include several fixed-parameter slices. F6 instead pairs a contour map with a three-dimensional objective surface; its height is F, not u.
+This gallery pairs objective landscapes with views of the corresponding PDE state surfaces. Colors show the objective value F; the height coordinate u in a state-surface panel shows the PDE state. Parameterized problems include several fixed-parameter slices.
 
 **Figure version:** F6 panels updated on 8 October 2026; other panels updated on 29 September 2026 using the stored reference fields. Variable labels follow the manuscript equations and figure captions. Stars mark representative points checked against the manuscript reference targets; they do not by themselves establish global optimality. Color limits may use quantiles and need not equal the reference objective value.
 
@@ -64,9 +64,9 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 [Definition](problems/f06.md) · [Reference calculation](../reference/f06.py)
 
-| Objective landscape / decision-space slices | Objective surface |
+| Objective landscape / decision-space slices | PDE state surface colored by objective |
 | --- | --- |
-| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 objective surface](figures/f06_geometry.png) |
+| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 PDE state geometry](figures/f06_geometry.png) |
 
 ## F7
 
