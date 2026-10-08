@@ -15,7 +15,7 @@ landscape characteristics, state–decision coupling, and feasible-region geomet
 
 [Benchmark design](#benchmark-design) · [Test suite](#test-suite-f1f11) ·
 [Full problem definitions](docs/problem_definitions.md) · [Evaluation](#models-optimizers-and-evaluation) ·
-[Quick start](#quick-start)
+[Experiment configuration](protocols/README.md) · [Quick start](#quick-start)
 
 ## Benchmark design
 
@@ -62,6 +62,10 @@ mathematical formulation and the manuscript's detailed explanation of these axes
 | [F11](docs/problem_definitions.md#f11) | Parametric forced heat equation | `(x, t, mu)` | Ackley-type objective using state and input work | Parameterized forcing and state–source integral | 40 |
 
 The HF budgets above come from [the main configuration](protocols/main.yaml).
+The current configuration version is **2026-10-08**. The
+[configuration guide](protocols/README.md) records all problem budgets, the
+fixed F6/F8 model settings and the main, optimizer, constraint, residual and
+illustration repeat schedules.
 **All F1–F11 objective functions, PDEs, initial/boundary conditions, constraints
 and reference-solution calculations are collected in the
 [full problem definitions document](docs/problem_definitions.md).**
@@ -115,7 +119,9 @@ Evaluation separates three questions:
    does it produce on specified evaluation points?
 
 The main experimental comparisons use 30 runs per problem–method pair with
-seeds 450–479. Result summaries report feasible-run counts and the mean and
+seeds 450–479. The additional data-only FNO comparison is supplied for F6
+(`fno_de`, 300 training steps per fit); the eight common methods remain the
+F1–F11 comparison set. Result summaries report feasible-run counts and the mean and
 standard deviation of feasible objectives (`ddof=0`). Convergence trajectories
 use the consumed HF archive. Surrogate predictions and unconsumed
 final-population diagnostics do not determine the reported best objective.
@@ -198,11 +204,14 @@ then run experiments:
 
 ```bash
 python experiments/run.py --problem f06 --method gp_de --protocol main --seed 450
-python experiments/batch.py --protocol main --runs 30 --dry-run
-python experiments/aggregate.py --protocol main
+python experiments/batch.py --protocol main --group main --dry-run
+python experiments/aggregate.py --protocol main --results results/main
 ```
 
 The batch command previews the jobs; remove `--dry-run` to execute them.
+Use `--problems f06,f08` to run only those problems. Each output records the
+complete configuration, protocol checksum and actual HF counts. Saved-model
+and illustration schedules are documented in [the configuration guide](protocols/README.md).
 Reference-value checks can be run independently:
 
 ```bash
@@ -218,7 +227,7 @@ python reference/f01.py --output outputs/f01_reference.json
 | `dataset/` | Reference-field generation, import and validation |
 | `surrogates/` | Data-driven and physics-informed surrogate models |
 | `optimizers/`, `methods/` | Search algorithms and surrogate-assisted methods |
-| `protocols/` | Main experiment and demonstration configurations |
+| `protocols/` | Fixed budgets, model settings, repeat schedules and demonstration configuration |
 | `experiments/` | Run, batch and aggregate commands |
 | `core/` | Experiment execution and component registry |
 | `evaluation/` | Reference interpolation, HF-query accounting and numerical metrics |

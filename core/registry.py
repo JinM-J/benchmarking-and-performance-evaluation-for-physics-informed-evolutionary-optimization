@@ -21,6 +21,7 @@ from methods.pinn_de import PINNDEMethod
 from methods.rbfn_de import RBFNDEMethod
 from methods.mlp_de import MLPDEMethod
 from methods.pino_de import PINODEMethod
+from methods.fno_de import FNODEMethod
 from methods.ji_saea import JiSADEGRMMethod
 from methods.glosade import GLoSADEMethod
 # Optimizer ablations retain the surrogate, sampling policy, and penalty settings.
@@ -78,6 +79,7 @@ METHODS = {
     'rbfn_de': RBFNDEMethod,
     'mlp_de': MLPDEMethod,
     'pino_de': PINODEMethod,
+    'fno_de': FNODEMethod,
     'ji_sade_grm': JiSADEGRMMethod,
     'glosade': GLoSADEMethod,
     'gp_pso': GPPSOMethod,
@@ -169,7 +171,7 @@ def make_method(name: str, protocol, seed: int):
     # Strip the _de/_pso/_cmaes optimizer suffix to obtain the surrogate name.
     surr_key = next((base_name[:-len(s)] for s in ("_de", "_pso", "_cmaes")
                      if base_name.endswith(s)), base_name)
-    if surr_key in ("rbfn", "mlp", "pino", "pigp") \
+    if surr_key in ("rbfn", "mlp", "pino", "pigp", "fno") \
             and surr_key not in protocol.surrogates:
         raise KeyError(
             f"Protocol {protocol.name} has no {surr_key} hyperparameters: "

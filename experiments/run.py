@@ -12,6 +12,7 @@ import hashlib
 import json
 import sys
 import time
+from dataclasses import asdict
 from pathlib import Path
 
 import numpy as np
@@ -61,7 +62,14 @@ def main():
         ap.error("Deferred residual evaluation requires saving the final surrogate model")
 
     problem_key = args.protocol_key or args.problem.upper()
-    protocol = load_protocol(ROOT / "protocols" / f"{args.protocol}.yaml", problem_key)
+    protocol_path = ROOT / "protocols" / f"{args.protocol}.yaml"
+    protocol = load_protocol(protocol_path, problem_key)
+    protocol_document = yaml.safe_load(protocol_path.read_text(encoding="utf-8"))
+    configuration = {
+        "protocol_file": str(protocol_path.relative_to(ROOT)),
+        "protocol_sha256": sha256_of(protocol_path),
+        "suite_version": protocol_document.get("suite_version"),
+    }
 
     problem = make_problem(args.problem)
     method = make_method(args.method, protocol, args.seed)
@@ -108,7 +116,6 @@ def main():
     wall_total = time.perf_counter() - t0
     if args.save_final_surrogate:
         # Save immediately after optimization so later export failures retain the final model.
-        from dataclasses import asdict
         from experiments.surrogate_checkpoint import save_checkpoint
         save_checkpoint(method.surrogate, out_dir / "final_surrogate.pkl", args.problem,
                         metadata=dict(problem=args.problem, method=args.method, seed=args.seed,
@@ -162,6 +169,7 @@ def main():
         "problem": args.problem,
         "method": args.method,
         "protocol": protocol.name,
+        "configuration": configuration,
         "seed": int(args.seed),
         "dataset": {"file": dataset_file, "sha256": dataset_sha256},
         "budget": {
@@ -259,6 +267,8 @@ def main():
         "problem": args.problem,
         "method": args.method,
         "protocol": protocol.name,
+        "configuration": configuration,
+        "protocol_config": asdict(protocol),
         "seed": args.seed,
         "data_path": str(data_path),
         "dataset_sha256": dataset_sha256,

@@ -16,7 +16,7 @@ or state-field interface is accessed.
 Report this version as GLoSADE-adapted. Equalities in F02/F08 are converted
 to abs(h)-tol<=0 with the declared tolerance, while Problem.violation checks
 the final state. The original NP=80, K>=100 and several thousand evaluations
-are adapted to 40--80 HF evaluations: protocol.init_points sets the initial
+are adapted to the configured HF budget: protocol.init_points sets the initial
 population and K is capped by archive size. Lambda, DE parameters and GRNN
 spread retain the paper/official-code values. SciPy trust-constr replaces
 MATLAB fmincon(interior-point), with the same 300-iteration cap. This is not

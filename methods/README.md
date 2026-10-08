@@ -14,6 +14,9 @@
 | `glosade` | Decision-level GRNN / cubic RBF models | GLoSADE adaptation |
 
 The cubic RBFN bundle used inside SaDE-SA-GRM is separate from `rbfn_de`'s state surrogate.
+The additional F6-only `fno_de` comparison uses the data-only Fourier-operator
+state model. Its 300-step training configuration is separate from PINO's
+100-step F6 configuration; it is not part of the eight common F1-F11 methods.
 
 PIGP uses covariance blocks for u and its linear PDE operator. Known forcing is
 available at collocation points without consuming state-label FE. Nonlinear terms

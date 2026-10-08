@@ -1,8 +1,42 @@
 # Main experiment configuration for F1--F11.
+suite_version: '2026-10-08'
 protocol:
   name: main
   description: Selected main-experiment settings; F09-F11 use full-decision Top-3;
     F06 uses the right-tail objective with HF70; F08 uses HF145.
+run_groups:
+  main:
+    base_seed: 450
+    runs: 30
+    methods: [gp_de, pigp_de, pinn_de, rbfn_de, mlp_de, pino_de, ji_sade_grm, glosade]
+    methods_by_problem:
+      F06: [gp_de, pigp_de, pinn_de, rbfn_de, mlp_de, pino_de, fno_de, ji_sade_grm, glosade]
+  optimizers:
+    problems: [f06, f08]
+    base_seed: 450
+    runs: 30
+    methods: [gp_pso, gp_cmaes, pigp_pso, pigp_cmaes, pinn_pso, pinn_cmaes,
+      rbfn_pso, rbfn_cmaes, pino_pso, pino_cmaes]
+  constraints:
+    problems: [f08]
+    base_seed: 450
+    runs: 30
+    methods: [gp_de_eps, gp_de_fs, pigp_de_eps, pigp_de_fs,
+      pinn_de_eps, pinn_de_fs, pino_de_eps, pino_de_fs]
+  residuals:
+    problems: [f06, f08]
+    base_seed: 481
+    runs: 10
+    methods: [gp_de, pigp_de, pinn_de, rbfn_de, mlp_de, pino_de]
+    save_final_surrogate: true
+    defer_pde_residual: true
+  illustrations:
+    problems: [f06, f08]
+    base_seed: 480
+    runs: 1
+    methods: [gp_de, pigp_de, pinn_de, rbfn_de, mlp_de, pino_de]
+    save_final_surrogate: true
+    export_surrogate_grid: 401
 method_defaults:
   glosade_lambda: 100
   glosade_grnn_spread: 0.5
@@ -462,6 +496,18 @@ problems:
     penalty_min: 10.0
     pop_size: 100
     surrogates:
+      fno:
+        ever_epochs: 300
+        grid_shape: [64, 64]
+        hidden_channels: 32
+        lr: 0.001
+        lr_max: 0.001
+        lr_min: 1.0e-05
+        n_layers: 4
+        n_modes: [12, 12]
+        parameter_batch_size: 16
+        projection_channels: 64
+        seed_model_init: true
       gp:
         length_scale_bounds:
         - 0.001
