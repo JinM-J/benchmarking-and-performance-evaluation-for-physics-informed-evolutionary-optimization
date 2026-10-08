@@ -14,9 +14,12 @@ The equality tolerance band is represented by inequalities
 Violation sums their positive parts. The residual requires fourth-order
 spatial derivatives."""
 import numpy as np
+from scipy.interpolate import RegularGridInterpolator
+
+from evaluation.reference import ReferenceDataset
 
 from problems.base import (PDEProblem, PhysicsSpec, InitialCondition, BoundaryCondition,
-                           LinearOperator, LinearOpTerm)
+                           LinearOperator, LinearOpTerm, Region)
 from problems.regions import face_region
 
 
@@ -81,6 +84,49 @@ class KuramotoSivashinskyPhysics(PhysicsSpec):
         )
 
 
+class PeriodicKSPhysics(KuramotoSivashinskyPhysics):
+
+    def initial_conditions(self):
+
+        def sample(n):
+            x = np.linspace(self.xmin, self.xmax, n, endpoint=False)
+            return np.column_stack((x, np.full(n, self.tmin)))
+        region = Region(contains_fn=lambda q: np.isclose(q[:, 1], self.tmin) & (q[:, 0] >= self.xmin) & (q[:, 0] < self.xmax), sample_fn=sample)
+        return (InitialCondition(region=region, target=lambda q: np.cos(q[:, 0]) * (1 + np.sin(q[:, 0]))),)
+
+    def boundary_conditions(self):
+
+        def face(x_value):
+
+            def sample(n):
+                t = np.linspace(self.tmin, self.tmax, n + 1)[1:]
+                return np.column_stack((np.full(n, x_value), t))
+            return Region(contains_fn=lambda q: np.isclose(q[:, 0], x_value) & (q[:, 1] > self.tmin) & (q[:, 1] <= self.tmax), sample_fn=sample)
+        pair = (face(self.xmin), face(self.xmax))
+        return tuple((BoundaryCondition(kind='periodic_derivative', region_pair=pair, derivative=('x',) * order, include_value=order == 1) for order in (1, 2, 3)))
+
+class PeriodicKSReference(ReferenceDataset):
+
+    def __init__(self, path, *, xmin, xmax, tmin):
+        super().__init__(path)
+        if self.u_grid.shape != (len(self.x_grid), len(self.t_grid)):
+            raise ValueError('KS reference axes do not match the stored state')
+        if self.x_grid[0] != xmin or self.x_grid[-1] >= xmax:
+            raise ValueError('Expected a half-open periodic KS spatial grid')
+        self._xmin, self._xmax, self._tmin = (xmin, xmax, tmin)
+        self.interpolator = RegularGridInterpolator((np.append(self.x_grid, xmax), self.t_grid), np.concatenate((self.u_grid, self.u_grid[:1]), axis=0))
+
+    def query(self, Q):
+        q = np.asarray(Q, dtype=float).reshape(-1, 2).copy()
+        q[:, 0] = self._xmin + np.mod(q[:, 0] - self._xmin, self._xmax - self._xmin)
+        q[:, 1] = np.clip(q[:, 1], self.t_min, self.t_max)
+        values = self.interpolator(q)
+        initial = q[:, 1] == self._tmin
+        x = q[initial, 0]
+        values[initial] = np.cos(x) * (1 + np.sin(x))
+        return values
+
+
 class F08(PDEProblem):
     """KS PDE with a quadratic objective and an equality tolerance band."""
 
@@ -101,7 +147,7 @@ class F08(PDEProblem):
         self.eps_eq = eps_eq
         self.xmin, self.xmax = xmin, xmax
         self.tmin, self.tmax = tmin, tmax
-        self._physics = KuramotoSivashinskyPhysics(
+        self._physics = PeriodicKSPhysics(
             alpha, beta, gamma, xmin, xmax, tmin, tmax
         )
 
@@ -123,6 +169,9 @@ class F08(PDEProblem):
 
     def decision_to_query(self, decision: np.ndarray) -> np.ndarray:
         return np.asarray(decision, dtype=float)
+
+    def load_reference(self, data_path):
+        return PeriodicKSReference(data_path, xmin=self.xmin, xmax=self.xmax, tmin=self.tmin)
 
     def evaluate_fitness(self, decision: np.ndarray, state_provider) -> float:
         x = float(decision[0])

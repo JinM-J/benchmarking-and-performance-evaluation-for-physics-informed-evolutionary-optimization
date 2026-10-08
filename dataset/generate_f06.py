@@ -27,6 +27,7 @@ W_PKT = 0.10
 X_S0 = -0.25
 T_STAR = 0.7
 ALPHA_T = 0.2
+RESPONSE_THRESHOLD = 0.05
 NX, NT = 1024, 401
 
 
@@ -89,7 +90,8 @@ def generate_exact_field(refinement=24):
         f"mean={np.abs(residual).mean():.2e}"
     )
 
-    x_star = X_S0 + C_CONV * T_STAR
+    packet_center = X_S0 + C_CONV * T_STAR
+    x_star = packet_center + W_PKT * np.sqrt(-np.log(RESPONSE_THRESHOLD))
     metadata = {
         "provenance": "manufactured exact solution (no numerical PDE solve error)",
         "pde": "u_t + c*u_x - nu*u_xx = s(x,t)",
@@ -100,8 +102,11 @@ def generate_exact_field(refinement=24):
         "background": "0.3*e^-t*sin(pi*x)",
         "packet": {"A": A_PKT, "w": W_PKT, "x_s(t)": f"{X_S0}+{C_CONV}*t"},
         "ic_bc": "Boundary values from the exact solution",
-        "reference_point": {"x_star": x_star, "t_star": T_STAR},
-        "objective": "F = (1-(u-b)/A)^2 + alpha*(t-t*)^2",
+        # Retain the archived field's packet-center metadata convention.
+        "reference_point": {"x_star": packet_center, "t_star": T_STAR},
+        "optimization_reference_point": {"x_star": x_star, "t_star": T_STAR},
+        "response_threshold": RESPONSE_THRESHOLD,
+        "objective": "F = (1-((u-b)/A)/eta)^2 + max(0,-z)^2 + alpha*(t-t*)^2; eta=0.05",
         "alpha_t": ALPHA_T,
         "design_intent": "A small local signal on a smooth background distinguishes full-field MSE "
         "from local objective accuracy; omitting the packet has an MSE cost of order 1e-4",

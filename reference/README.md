@@ -12,7 +12,7 @@ that identifier. For example, F6 uses `problems/f06.py`, `reference/f06.py`,
 | F3 | `f03.py` | Algebraic target substitution; optional stored-field check |
 | F4 | `f04.py` | High-precision stationary equations |
 | F5 | `f05.py` | High-precision active-constraint intersection |
-| F6 | `f06.py` | Manufactured solution, PDE, boundary conditions and continuous optimum |
+| F6 | `f06.py` | Manufactured solution, PDE, boundary conditions and right-side 5% response optimum |
 | F7 | `f07.py` | Attaining point and independent interpolation checks on the stored Poisson field |
 | F8 | `f08.py` | Equality target and implemented constraint checks; optional stored-field check |
 | F9 | `f09.py` | Algebraic lower bound; optional stored-field attainment calculation |

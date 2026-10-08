@@ -38,6 +38,7 @@ class PINOSurrogate(FNOSurrogate):
         self.res_weight = float(config.get("res_weight", 1.0))
         self.ic_weight = float(config.get("ic_weight", 1.0))
         self.bc_weight = float(config.get("bc_weight", 1.0))
+        self.max_periodic_bc_order = config.get('max_periodic_bc_order', None)
         self.residual_scale = float(config.get("residual_scale", 1.0))
         self.fourier_axes = tuple(config.get("fourier_axes", ()))
         self.paired_physics_axes = self._parse_paired_physics_axes(
@@ -51,7 +52,7 @@ class PINOSurrogate(FNOSurrogate):
     @staticmethod
     def _parse_paired_physics_axes(config_value: dict) -> dict:
         if not isinstance(config_value, dict):
-            raise TypeError("PINO paired_physics_axes must map axis names to lists of values")
+            raise TypeError('PINO paired_physics_axes must map axis names to value lists')
         return {
             str(axis_name): tuple(float(value) for value in values)
             for axis_name, values in config_value.items()
@@ -71,6 +72,8 @@ class PINOSurrogate(FNOSurrogate):
         self.res_weight = float(config.get("res_weight", self.res_weight))
         self.ic_weight = float(config.get("ic_weight", self.ic_weight))
         self.bc_weight = float(config.get("bc_weight", self.bc_weight))
+        if 'max_periodic_bc_order' in config:
+            self.max_periodic_bc_order = config['max_periodic_bc_order']
         self.residual_scale = float(
             config.get("residual_scale", self.residual_scale)
         )
@@ -89,19 +92,20 @@ class PINOSurrogate(FNOSurrogate):
         if self.physics_instances < 1:
             raise ValueError("PINO physics_instances must be positive")
         if min(self.ic_points, self.bc_points, self.obs_bc_points) < 1:
-            raise ValueError("PINO IC/BC collocation counts must be positive")
+            raise ValueError('PINO IC/BC point counts must be positive')
         if min(self.data_weight, self.res_weight,
                self.ic_weight, self.bc_weight) < 0.0:
             raise ValueError("PINO loss weights must be nonnegative")
         if self.residual_scale <= 0.0:
             raise ValueError("PINO residual_scale must be positive")
 
+        if self.max_periodic_bc_order is not None:
+            if isinstance(self.max_periodic_bc_order, (bool, np.bool_)) or not isinstance(self.max_periodic_bc_order, (int, np.integer)) or self.max_periodic_bc_order < 0:
+                raise ValueError('PINO max_periodic_bc_order must be a nonnegative integer or None')
+            self.max_periodic_bc_order = int(self.max_periodic_bc_order)
         coordinate_names = tuple(problem.physics.coordinate_names)
         if len(coordinate_names) != self._dim:
-            raise ValueError(
-                f"PINO physics.coordinate_names length {len(coordinate_names)} "
-                f"!= query dimension {self._dim}"
-            )
+            raise ValueError(f'PINO physics.coordinate_names length {len(coordinate_names)} differs from query dimension {self._dim}')
         self._axis_to_query = {
             name: index for index, name in enumerate(coordinate_names)
         }
@@ -111,12 +115,10 @@ class PINOSurrogate(FNOSurrogate):
         }
         unknown_fourier = set(self.fourier_axes) - set(self._axis_to_grid)
         if unknown_fourier:
-            raise ValueError(
-                f"PINO fourier_axes contains non-grid axes: {sorted(unknown_fourier)}"
-            )
+            raise ValueError(f'PINO fourier_axes includes nongrid axes: {sorted(unknown_fourier)}')
         for axis_name, values in self.paired_physics_axes.items():
             if axis_name not in self._axis_to_query:
-                raise KeyError(f"PINO paired_physics_axes contains unknown axis {axis_name}")
+                raise KeyError(f'PINO paired_physics_axes includes unknown axis {axis_name}')
             query_axis = self._axis_to_query[axis_name]
             if query_axis not in self._conditioning_axes:
                 raise ValueError(
@@ -133,23 +135,17 @@ class PINOSurrogate(FNOSurrogate):
         required = set(problem.physics.required_derivatives())
         for axes in required:
             if not axes or len(set(axes)) != 1:
-                raise NotImplementedError(
-                    f"PINO supports repeated derivatives along a single axis; received {axes}"
-                )
+                raise NotImplementedError(f'PINO supports repeated derivatives on a single axis; received {axes}')
             if axes[0] not in self._axis_to_grid:
                 raise ValueError(
                     f"PINO derivative axis {axes[0]} is not in grid_axes={self._grid_axes}"
                 )
-            if len(axes) not in (1, 2, 4):
-                raise NotImplementedError(
-                    f"PINO supports derivative orders 1, 2 and 4; received {axes}"
-                )
+            if len(axes) not in (1, 2, 3, 4):
+                raise NotImplementedError(f'PINO supports derivative orders 1/2/3/4; received {axes}')
             grid_size = self.grid_shape[self._axis_to_grid[axes[0]]]
-            minimum_points = 5 if len(axes) == 4 else 3
+            minimum_points = 5 if len(axes) in (3, 4) else 3
             if axes[0] not in self.fourier_axes and grid_size < minimum_points:
-                raise ValueError(
-                    f"PINO finite differences for {axes} require at least {minimum_points} grid points"
-                )
+                raise ValueError(f'PINO {axes} finite differences require at least {minimum_points} grid points')
 
         self._physics_parameter_rows = self._sample_physics_parameters()
         self._physics_inputs = self._make_grid_inputs(
@@ -161,7 +157,7 @@ class PINOSurrogate(FNOSurrogate):
         )
         residual_mask = self._make_residual_mask(physics_Q_np, required)
         if not np.any(residual_mask):
-            raise ValueError("PINO PDE residual mask is empty; check the grid, geometry and margin")
+            raise ValueError('PINO PDE residual mask is empty; check grid, geometry and margin')
         self._residual_mask = torch.as_tensor(
             residual_mask, dtype=torch.bool, device=self.device
         )
@@ -257,7 +253,7 @@ class PINOSurrogate(FNOSurrogate):
                 endpoint[array_axis] = -1
                 mask[tuple(endpoint)] = False
             else:
-                radius = 2 if len(axes) == 4 else 1
+                radius = 2 if len(axes) in (3, 4) else 1
                 mask &= self._axis_stencil_valid(
                     base_valid, array_axis, radius
                 )
@@ -343,13 +339,13 @@ class PINOSurrogate(FNOSurrogate):
                 term["kind"] = condition.kind
                 term["deriv"] = tuple(condition.derivative)
             elif condition.kind in ("periodic", "periodic_derivative"):
+                kind = condition.kind
+                if kind == 'periodic_derivative' and self.max_periodic_bc_order is not None and (len(condition.derivative) > self.max_periodic_bc_order):
+                    if not condition.include_value:
+                        continue
+                    kind = 'periodic'
                 region_a, region_b = condition.region_pair
-                term = {
-                    "kind": condition.kind,
-                    "a": self._condition_term(region_a, n_points),
-                    "b": self._condition_term(region_b, n_points),
-                    "deriv": tuple(condition.derivative),
-                }
+                term = {'kind': kind, 'a': self._condition_term(region_a, n_points), 'b': self._condition_term(region_b, n_points), 'deriv': tuple(condition.derivative), 'include_value': condition.include_value}
             else:
                 raise KeyError(f"Unsupported PINO boundary type: {condition.kind}")
             self._bc_terms.append(term)
@@ -424,9 +420,28 @@ class PINOSurrogate(FNOSurrogate):
             center = self._slice(ndim, tensor_axis, slice(1, -1))
             plus = self._slice(ndim, tensor_axis, slice(2, None))
             minus = self._slice(ndim, tensor_axis, slice(None, -2))
-            derivative[center] = (
-                field[plus] - 2.0 * field[center] + field[minus]
-            ) / spacing ** 2
+            derivative[center] = (field[plus] - 2.0 * field[center] + field[minus]) / spacing ** 2
+            if include_boundary:
+                if n_points < 4:
+                    raise ValueError('Boundary second derivatives require four grid points')
+                for position, indices in ((0, (0, 1, 2, 3)), (-1, (-1, -2, -3, -4))):
+                    values = [field[self._slice(ndim, tensor_axis, k)] for k in indices]
+                    derivative[self._slice(ndim, tensor_axis, position)] = (2.0 * values[0] - 5.0 * values[1] + 4.0 * values[2] - values[3]) / spacing ** 2
+            return derivative
+        if order == 3:
+            if n_points < 5:
+                raise ValueError('Third derivatives require five grid points')
+            center = self._slice(ndim, tensor_axis, slice(2, -2))
+            plus_one = self._slice(ndim, tensor_axis, slice(3, -1))
+            plus_two = self._slice(ndim, tensor_axis, slice(4, None))
+            minus_one = self._slice(ndim, tensor_axis, slice(1, -3))
+            minus_two = self._slice(ndim, tensor_axis, slice(None, -4))
+            derivative[center] = (field[plus_two] - 2.0 * field[plus_one] + 2.0 * field[minus_one] - field[minus_two]) / (2.0 * spacing ** 3)
+            if include_boundary:
+                stencils = ((0, (0, 1, 2, 3, 4), (-5, 18, -24, 14, -3)), (1, (0, 1, 2, 3, 4), (-3, 10, -12, 6, -1)), (-2, (-1, -2, -3, -4, -5), (3, -10, 12, -6, 1)), (-1, (-1, -2, -3, -4, -5), (5, -18, 24, -14, 3)))
+                for position, indices, weights in stencils:
+                    value = sum((w * field[self._slice(ndim, tensor_axis, k)] for k, w in zip(indices, weights)))
+                    derivative[self._slice(ndim, tensor_axis, position)] = value / (2.0 * spacing ** 3)
             return derivative
 
         if order == 4:
@@ -442,7 +457,7 @@ class PINOSurrogate(FNOSurrogate):
             ) / spacing ** 4
             return derivative
 
-        raise NotImplementedError(f"PINO does not support finite differences of order {order}")
+        raise NotImplementedError(f'PINO does not support {order}-order finite differences')
 
     def _field_derivative(self, field: torch.Tensor, axes: tuple,
                           include_boundary: bool = False) -> torch.Tensor:
@@ -525,9 +540,8 @@ class PINOSurrogate(FNOSurrogate):
             else:
                 values_a = self._sample_term(field, term["a"])
                 values_b = self._sample_term(field, term["b"])
-                loss_bc = loss_bc + torch.mean(
-                    ((values_a - values_b) / self.output_scale) ** 2
-                )
+                if term.get('include_value', True):
+                    loss_bc = loss_bc + torch.mean(((values_a - values_b) / self.output_scale) ** 2)
                 if term["kind"] == "periodic_derivative":
                     derivative_field = derivative(term["deriv"], True)
                     derivative_a = self._sample_term(
@@ -620,11 +634,11 @@ class PINOSurrogate(FNOSurrogate):
 
     def fit(self, Q: np.ndarray, u: np.ndarray, **ctx):
         if self.model is None:
-            raise RuntimeError("PINO has not been set up")
+            raise RuntimeError('PINO setup has not been called')
         Q = np.asarray(Q, dtype=np.float32).reshape(-1, self._dim)
         targets = np.asarray(u, dtype=np.float32).reshape(-1)
         if Q.shape[0] != targets.shape[0]:
-            raise ValueError("PINO Q and u have different sample counts")
+            raise ValueError('PINO Q and u sample counts differ')
         if not np.all(np.isfinite(Q)) or not np.all(np.isfinite(targets)):
             raise ValueError("PINO training data contains nonfinite values")
 

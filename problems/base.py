@@ -65,8 +65,8 @@ class BoundaryCondition:
 
     dirichlet: u=target(Q) on region.
     periodic: equal states on the paired regions.
-    periodic_derivative: equal states and equal first derivatives along
-    the specified derivative axis on the paired regions.
+    periodic_derivative: equal specified derivatives on the paired regions;
+    include_value also enforces state equality (enabled by default).
     neumann: the specified derivative equals target(Q); targets can depend
     on any query column, including parameter axes.
 
@@ -80,6 +80,7 @@ class BoundaryCondition:
     derivative: tuple = ()
     n_points: Optional[int] = None
     points_key: str = "bc_points"
+    include_value: bool = True
 
 
 @dataclass

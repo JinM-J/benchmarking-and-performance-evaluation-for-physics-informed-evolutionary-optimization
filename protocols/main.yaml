@@ -2,7 +2,7 @@
 protocol:
   name: main
   description: Selected main-experiment settings; F09-F11 use full-decision Top-3;
-    F06 uses HF70.
+    F06 uses the right-tail objective with HF70; F08 uses HF145.
 method_defaults:
   glosade_lambda: 100
   glosade_grnn_spread: 0.5
@@ -449,51 +449,48 @@ problems:
         sigma_floor: 0.0001
         reg: 1.0e-06
   F06:
-    pop_size: 100
-    maxgen: 100
-    init_points: 20
-    update_interval: 10
     hf_points_per_update: 5
-    penalty_min: 10.0
-    penalty_max: 100.0
     hf_query_budget: 70
+    init_points: 20
+    maxgen: 100
     method_params:
       inner_gens: 200
       stagnation_limit: 5
-    mse_grid_nx: 100
     mse_grid_nt: 100
-    update_policy:
-      type: periodic_topk
+    mse_grid_nx: 100
+    penalty_max: 100.0
+    penalty_min: 10.0
+    pop_size: 100
     surrogates:
       gp:
         length_scale_bounds:
         - 0.001
         - 100.0
         white_kernel: 1.0e-08
+      mlp:
+        ever_epochs: 100
+        layers:
+        - 2
+        - 80
+        - 80
+        - 80
+        - 80
+        - 1
+        lr: 0.008
+        lr_max: 0.008
+        lr_min: 1.0e-06
       pigp:
+        collocation_noise: 0.01
         length_scale_bounds:
         - 0.001
         - 100.0
-        white_kernel: 1.0e-05
         n_collocation: 100
-        collocation_noise: 0.01
+        white_kernel: 1.0e-05
       pinn:
-        layers:
-        - 2
-        - 80
-        - 80
-        - 80
-        - 80
-        - 1
-        ever_epochs: 300
-        ic_points: 500
         bc_points: 500
-        res_points: 10000
-        lr_max: 0.008
-        lr_min: 1.0e-06
-        lr: 0.008
         data_weight: 5.0
-      mlp:
+        ever_epochs: 100
+        ic_points: 500
         layers:
         - 2
         - 80
@@ -501,38 +498,41 @@ problems:
         - 80
         - 80
         - 1
-        ever_epochs: 300
+        lr: 0.008
         lr_max: 0.008
         lr_min: 1.0e-06
-        lr: 0.008
+        res_points: 10000
       pino:
+        bc_points: 64
+        bc_weight: 1.0
+        data_weight: 5.0
+        ever_epochs: 100
+        fourier_axes: []
         grid_shape:
         - 64
         - 64
+        hidden_channels: 32
+        ic_points: 64
+        ic_weight: 1.0
+        lr: 0.001
+        lr_max: 0.001
+        lr_min: 1.0e-05
+        n_layers: 4
         n_modes:
         - 12
         - 12
-        hidden_channels: 32
-        n_layers: 4
-        projection_channels: 64
-        ever_epochs: 300
-        lr_max: 0.001
-        lr_min: 1.0e-05
-        lr: 0.001
         parameter_batch_size: 16
-        seed_model_init: true
         physics_instances: 1
-        ic_points: 64
-        bc_points: 64
-        data_weight: 5.0
+        projection_channels: 64
         res_weight: 1.0
-        ic_weight: 1.0
-        bc_weight: 1.0
-        fourier_axes: []
+        seed_model_init: true
       rbfn:
-        sigma_k: 2
-        sigma_floor: 0.0001
         reg: 1.0e-06
+        sigma_floor: 0.0001
+        sigma_k: 2
+    update_interval: 10
+    update_policy:
+      type: periodic_topk
   F07:
     pop_size: 100
     maxgen: 150
@@ -628,35 +628,43 @@ problems:
         reg: 1.0e-06
   F08:
     pop_size: 100
-    maxgen: 200
-    init_points: 20
+    maxgen: 150
+    init_points: 100
     update_interval: 10
     hf_points_per_update: 3
     penalty_min: 0.0
     penalty_max: 100.0
-    hf_query_budget: 80
+    constraint_mode: penalty
+    hf_query_budget: 145
+    update_policy:
+      type: periodic_topk
     method_params:
       inner_gens: 200
       stagnation_limit: 5
     mse_grid_nx: 100
     mse_grid_nt: 100
-    update_policy:
-      type: periodic_topk
     surrogates:
       gp:
         length_scale_bounds:
-        - 0.01
+        - 0.1
         - 100.0
         white_kernel: 1.0e-08
+        center_y: false
+        white_kernel_bounds:
+        - 1.0e-08
+        - 100000.0
+        n_restarts_optimizer: 0
+        kernel_type: matern32
       pigp:
         length_scale_bounds:
-        - 0.03
+        - 0.01
         - 100.0
         white_kernel: 1.0e-05
         n_collocation: 100
         collocation_noise: 0.01
         legacy_transform_a: 1.0
         legacy_transform_b: 0.7853981633974483
+        center_y: false
       pinn:
         layers:
         - 2
@@ -669,11 +677,13 @@ problems:
         ic_points: 500
         bc_points: 500
         res_points: 10000
-        lr_max: 0.003
-        lr_min: 0.0005
-        lr: 0.003
+        lr_max: 0.001
+        lr_min: 0.0002
+        lr: 0.001
         data_weight: 10.0
-        res_weight: 0.0001
+        res_weight: 0.001
+        seed_model_init: true
+        max_periodic_bc_order: 1
       mlp:
         layers:
         - 2
@@ -682,10 +692,12 @@ problems:
         - 100
         - 100
         - 1
-        ever_epochs: 300
-        lr_max: 0.003
-        lr_min: 0.0005
-        lr: 0.003
+        ever_epochs: 500
+        lr: 0.001
+        lr_max: 0.001
+        lr_min: 0.0002
+        lr_schedule: exponential
+        seed_model_init: true
       pino:
         grid_shape:
         - 64
@@ -705,11 +717,12 @@ problems:
         physics_instances: 1
         ic_points: 64
         bc_points: 64
-        data_weight: 10.0
+        data_weight: 100.0
         res_weight: 0.0001
         ic_weight: 1.0
         bc_weight: 1.0
         fourier_axes: []
+        max_periodic_bc_order: 1
       rbfn:
         sigma_k: 2
         sigma_floor: 0.0001

@@ -12,12 +12,13 @@ Manufactured solution (stored-field interpolation still introduces error):
       +(nu*A/w^2)*(2-4*z^2)*exp(-z^2)
 Initial and boundary values follow the exact solution.
 
-The unconstrained objective emphasizes the local signal:
-    F(x,t,u)=(1-(u-b(x,t))/A)^2+alpha*(t-t_star)^2, alpha=0.2.
+The unconstrained objective locates the right-side 5% packet response:
+    q=(u-b(x,t))/A, eta=0.05
+    F(x,t,u)=(1-q/eta)^2+max(0,-z)^2+alpha*(t-t_star)^2, alpha=0.2.
 Full-field prediction error and this local objective measure different
 properties; comparative method performance requires experiments.
-On the exact field, u-b=A*exp(-z^2)<=A, with equality only at the packet
-center. The unique exact optimum is (x,t)=(0.1,0.7), with F=0."""
+On the exact field, q=exp(-z^2). All three terms vanish only at
+t=0.7 and z=sqrt(log(20)), giving x=0.1+0.1*sqrt(log(20)) and F=0."""
 import json
 
 import numpy as np
@@ -26,7 +27,7 @@ from problems.base import (PDEProblem, PhysicsSpec, InitialCondition,
                            BoundaryCondition, LinearOperator, LinearOpTerm)
 from problems.regions import face_region
 
-# Constants must match dataset/generate_f06.py; changes require regenerated data.
+# PDE and state constants must match dataset/generate_f06.py.
 C_CONV = 0.5
 NU = 5e-4
 A_PKT = 0.03
@@ -34,7 +35,8 @@ W_PKT = 0.10
 X_S0 = -0.25
 T_STAR = 0.7
 ALPHA_T = 0.2
-X_STAR = X_S0 + C_CONV * T_STAR      # = 0.1
+RESPONSE_THRESHOLD = 0.05
+X_STAR = X_S0 + C_CONV * T_STAR + W_PKT * np.sqrt(-np.log(RESPONSE_THRESHOLD))
 
 
 def _background_np(x, t):
@@ -182,8 +184,9 @@ class F06(PDEProblem):
         u = float(np.asarray(
             state_provider.evaluate(np.array([[x, t]])),
             dtype=float).reshape(-1)[0])
-        r = u - float(_background_np(x, t))       # On the exact field, r=A*exp(-z^2).
-        return float((1 - r / A_PKT) ** 2
+        q = (u - float(_background_np(x, t))) / A_PKT
+        z = (x - X_S0 - C_CONV * t) / W_PKT
+        return float((1 - q / RESPONSE_THRESHOLD) ** 2 + max(0.0, -z) ** 2
                      + self.alpha_t * (t - self.t_star) ** 2)
 
     # Unconstrained problem.

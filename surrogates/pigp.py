@@ -79,6 +79,10 @@ class PIGPSurrogate(Surrogate):
 
     def setup(self, problem, seed: int, config: dict = None):
         config = config or {}
+        center_y = config.get("center_y", True)
+        if not isinstance(center_y, (bool, np.bool_)):
+            raise ValueError("PIGP center_y must be a boolean")
+        self.center_y = bool(center_y)
         qb = np.asarray(problem.query_bounds, dtype=float)
         self.qmin, self.qmax = qb[:, 0], qb[:, 1]
         self.problem = problem
@@ -252,7 +256,7 @@ class PIGPSurrogate(Surrogate):
         X = self._normalize(Q)
 
         # Standardize both blocks with the shared scale s_u.
-        self._m_u = float(y_u.mean())
+        self._m_u = float(y_u.mean()) if self.center_y else 0.0
         self._s_u = max(float(y_u.std()), 1e-12)
         t_u = (y_u - self._m_u) / self._s_u
         t_l = (self._r_L - self._m_u * self._c_id_fn(self._Q_L)) / self._s_u

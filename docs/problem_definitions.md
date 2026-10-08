@@ -8,7 +8,8 @@ The following sections present the manuscript's problem descriptions, PDEs,
 initial/boundary conditions, objectives, constraints and reference solutions.
 Implementation conventions are stated separately within each problem.
 
-**Figure version:** updated on 29 September 2026 using the stored reference
+**Figure version:** F6 objective panels updated on 8 October 2026; the other
+figures were updated on 29 September 2026 using the stored reference
 fields. Variable labels and representative reference markers follow the
 manuscript. The [problem gallery](problem_gallery.md) describes plotting
 conventions, including F2's state-surface display band. The definitions and
@@ -438,13 +439,13 @@ See the [dataset instructions](../dataset/README.md) for data preparation and th
 
 ## F6
 
-**Advection–diffusion equation with a local state response**
+**Advection–diffusion equation with a right-tail response objective**
 
-$F_6$ couples an advection-diffusion equation with an objective that measures the state deviation from a time-dependent background. The objective emphasizes the local state response around a target time.
+$F_6$ couples an advection-diffusion equation with an objective that measures the state deviation from a time-dependent background. The objective locates the right-side response at 5% of the packet amplitude around a target time.
 
-| Objective landscape / decision-space slices | PDE state surface colored by objective |
+| Objective landscape / decision-space slices | Objective surface |
 | --- | --- |
-| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 PDE state geometry](figures/f06_geometry.png) |
+| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 objective surface](figures/f06_geometry.png) |
 
 ### Problem definition
 
@@ -452,7 +453,7 @@ The decision vector and PDE query are both $(x,t)\in[-1,1]\times[0,1]$. The form
 
 $$
 \begin{aligned}
-\min_{x,t}\quad F_6&=\left(1-\frac{u-b(x,t)}{0.03}\right)^2+0.2(t-0.7)^2,\\
+\min_{x,t}\quad F_6&=\left(1-\frac{u-b(x,t)}{0.03\cdot0.05}\right)^2+\max(0,-\xi)^2+0.2(t-0.7)^2,\\
 \text{s.t.}\quad u_t+0.5u_x-0.0005u_{xx}&=s(x,t),\\
 u(x,0)&=0.3\sin(\pi x)+0.03e^{-\xi(x,0)^2},\\
 u(-1,t)&=0.03e^{-\xi(-1,t)^2},\\
@@ -485,30 +486,32 @@ $$
 It consists of a smooth decaying background and a moving localized feature centered at $x_s(t)=-0.25+0.5t$, with amplitude $0.03$ and width $0.10$. Substituting this solution into the objective gives
 
 $$
-F_6(x,t)=\left(1-e^{-\xi(x,t)^2}\right)^2+0.2(t-0.7)^2\geq0.
+F_6(x,t)=\left(1-\frac{e^{-\xi(x,t)^2}}{0.05}\right)^2+\max(0,-\xi)^2+0.2(t-0.7)^2\geq0.
 $$
 
-Both terms vanish only when $t=0.7$ and $\xi=0$. Therefore the unique global minimizer of the continuous manufactured field is
+All three terms vanish only when $t=0.7$ and $\xi=\sqrt{\log20}$. The right-side penalty excludes the negative root. Therefore the unique global minimizer of the continuous manufactured field is
 
 $$
-(x^\ast,t^\ast)=(0.1,0.7),\qquad F_6^\ast=0,
+(x^\ast,t^\ast)=(0.1+0.1\sqrt{\log20},0.7),\qquad F_6^\ast=0,
 $$
 
 with state
 
 $$
-u^\ast=0.3e^{-0.7}\sin(0.1\pi)+0.03.
+u^\ast=0.3e^{-0.7}\sin(\pi x^\ast)+0.0015.
 $$
 
 The [reference script](../reference/f06.py) checks the independent manufactured expression against the implemented PDE residual using automatic differentiation, checks initial and boundary values, and compares the problem constants and source term with the generator. It uses float64 arithmetic, 2,048 sampled points by default, and a $10^{-12}$ check threshold. The algebraic argument above establishes continuous optimality; the sampled residual checks verify implementation consistency. The [reference record](../reference/targets/f06.json) stores the exact point and objective.
 
 ### Reference data and implementation conventions
 
-The [data generator](../dataset/generate_f06.py) samples the exact expression rather than numerically integrating a PDE. Its base grid contains 1,024 spatial nodes and 401 time nodes. Refinement factor $r$ produces $(1023r+1)\times(400r+1)$ nodes; the default $r=24$ gives `(24553,9601)`. The file `f06.npz` contains `x`, `t`, `u` in `(x,t)` order, and `meta_json` recording the constants and reference point. The problem checks the attached data metadata before objective evaluation.
+The [data generator](../dataset/generate_f06.py) samples the exact expression rather than numerically integrating a PDE. Its base grid contains 1,024 spatial nodes and 401 time nodes. Refinement factor $r$ produces $(1023r+1)\times(400r+1)$ nodes; the default $r=24$ gives `(24553,9601)`. The file `f06.npz` contains `x`, `t`, `u` in `(x,t)` order, and `meta_json` recording the constants and packet center. The archived `reference_point` is the packet center `(0.1,0.7)`, not the minimizer of the current objective. Newly generated metadata additionally records `optimization_reference_point` and the response threshold; the PDE expression and grid are unchanged. The problem checks the attached data metadata before objective evaluation.
 
 Stored-field evaluation uses linear interpolation. Consequently, the sampled field has interpolation error even though the expression being sampled is exact. The continuous value $F_6^\ast=0$ is not a certificate that the interpolated field attains zero at the same point. The optional dataset mode in the reference script checks metadata and the objective API using the exact provider; it does not read or validate the full stored field.
 
 The local objective depends on the small feature after subtraction of the background. Global state-prediction error and local optimization accuracy therefore measure different properties. Comparative model performance must be assessed from the experimental results.
+
+The main configuration uses 20 initial state labels, a population of 100, 100 generations, and five new labels every ten generations (70 labels total). PINN, PINO and MLP each use 100 training steps per fit. All settings are provided in [the main configuration](../protocols/main.yaml).
 
 See the [dataset instructions](../dataset/README.md) and [reference instructions](../reference/README.md) for usage.
 
@@ -650,9 +653,11 @@ The [reference script](../reference/f08.py) first substitutes the target state i
 
 The [data generator](../dataset/generate_f08.py) uses 200 spatial nodes with $\Delta x=0.01$ on the half-open interval $[0,2)$, centered finite differences with periodic indexing, and explicit fourth-order Runge–Kutta stepping with $\Delta t=10^{-6}$. It stores every 100th step, giving 10,001 time samples over $[0,1]$. The file `f08.npz` contains `x`, `t`, and `u` in `(x,t)` order, with field shape `(200,10001)`.
 
-The initial expression has different endpoint limits at $0$ and $2$; its periodic extension therefore has a seam at the initial time. The periodic boundary statement above is for positive time. The finite-difference generator wraps its spatial stencil. The surrogate physics interface explicitly declares periodic state and first-derivative matching, while the mathematical formulation states periodicity through the third derivative.
+The initial expression has different endpoint limits at $0$ and $2$; its periodic extension therefore has a seam at the initial time. The periodic boundary statement above is for positive time. The finite-difference generator wraps its spatial stencil. The physics interface declares periodic derivatives through order three, with state matching included in the first-order condition. The fixed PINN/PINO configurations retain state and first-derivative boundary losses (`max_periodic_bc_order: 1`). Initial-condition samples omit the spatial right endpoint; boundary samples exclude the initial time.
 
-The official reference loader uses linear interpolation and clips queries to the stored axes. Since the last stored spatial node is $x_1=1.99$, queries in $(1.99,2]$ are clipped to $1.99$ rather than wrapped through the periodic seam. This stored-field convention is part of reproducing the supplied implementation. Numerical field error, seam behavior, and tolerance-band optimality remain separate from the exact algebraic calculation of $3/4$.
+The reference loader uses linear interpolation with periodic spatial wrapping. It appends the first spatial row at $x_1=2$ to close the half-open grid and interpolates through the seam. Time queries are clipped to the stored interval. At $t=0$, it evaluates the prescribed initial expression after wrapping the spatial coordinate. Numerical field error, seam behavior, and tolerance-band optimality remain separate from the exact algebraic calculation of $3/4$.
+
+The main configuration uses 100 initial state labels, a population of 100, 150 generations, and three new labels every ten generations (145 labels total). GP uses a Matérn 3/2 kernel without mean centering; PIGP also disables mean centering. PINN/PINO use 300 training steps per fit and MLP uses 500. Fixed model, loss and kernel settings are provided in [the main configuration](../protocols/main.yaml). The two self-managed baselines use their own sampling rules under the same 145-label budget.
 
 See the [dataset instructions](../dataset/README.md) and [reference instructions](../reference/README.md) for usage.
 

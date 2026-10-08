@@ -54,9 +54,9 @@ mathematical formulation and the manuscript's detailed explanation of these axes
 | [F3](docs/problem_definitions.md#f3) | Allen–Cahn-type reaction–diffusion equation | `(x, t)` | Rastrigin-type objective | Multimodal objective coupled to a nonlinear field | 40 |
 | [F4](docs/problem_definitions.md#f4) | Forced heat equation | `(x, t)` | Six-hump camel objective | Spatially segmented, time-dependent forcing | 40 |
 | [F5](docs/problem_definitions.md#f5) | Forced heat equation | `(x, t)` | Linear objective in transformed coordinates; polynomial inequalities | Nonlinear algebraic feasibility | 40 |
-| [F6](docs/problem_definitions.md#f6) | Convection–diffusion equation with a manufactured solution | `(x, t)` | Local-signal-sensitive objective | Small localized state feature important to optimization | 70 |
+| [F6](docs/problem_definitions.md#f6) | Convection–diffusion equation with a manufactured solution | `(x, t)` | Right-side 5% response objective | Local packet-tail accuracy important to optimization | 70 |
 | [F7](docs/problem_definitions.md#f7) | Steady Poisson equation | `(x1, x2)` | Branin-type objective; perforated spatial domain | Irregular geometry and boundary conditions | 60 |
-| [F8](docs/problem_definitions.md#f8) | Kuramoto–Sivashinsky equation | `(x, t)` | Quadratic objective; equality tolerance band | Fourth-order spatial derivatives | 80 |
+| [F8](docs/problem_definitions.md#f8) | Kuramoto–Sivashinsky equation | `(x, t)` | Quadratic objective; equality tolerance band | Fourth-order spatial derivatives | 145 |
 | [F9](docs/problem_definitions.md#f9) | Parametric reaction–diffusion equation | `(x, t, mu)` | Goldstein–Price-type objective using local state and a state integral | Parameter-dependent state and integral coupling | 40 |
 | [F10](docs/problem_definitions.md#f10) | Parametric Burgers equation | `(x, t, lognu)` | Shifted Rosenbrock objective using state and dissipation | Viscosity-dependent dynamics and derivative-based integral | 40 |
 | [F11](docs/problem_definitions.md#f11) | Parametric forced heat equation | `(x, t, mu)` | Ackley-type objective using state and input work | Parameterized forcing and state–source integral | 40 |
@@ -65,6 +65,23 @@ The HF budgets above come from [the main configuration](protocols/main.yaml).
 **All F1–F11 objective functions, PDEs, initial/boundary conditions, constraints
 and reference-solution calculations are collected in the
 [full problem definitions document](docs/problem_definitions.md).**
+
+The current F6 objective targets the packet's right-side 5% response. Its
+continuous reference point is `(0.1 + 0.1 sqrt(log(20)), 0.7)` with objective
+zero. The PDE, stored field and solver grid are unchanged.
+
+| Problem | Initial labels | Population | Generations | Update interval | Labels per update | Total HF labels |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| F6 | 20 | 100 | 100 | 10 | 5 | 70 |
+| F8 | 100 | 100 | 150 | 10 | 3 | 145 |
+
+For F8, GP uses a Matérn 3/2 kernel with length-scale bounds `[0.1, 100]`
+and no mean centering; PIGP uses bounds `[0.01, 100]` and no mean centering.
+PINN/PINO use 300 training steps per fit; MLP uses 500. Their data/residual
+weights, learning rates and boundary-loss settings are fixed in
+[the main configuration](protocols/main.yaml). F8 state queries use periodic
+spatial interpolation. The two self-managed baselines retain their own
+initial sampling and search rules under the same total HF budget.
 
 ### Visual examples
 
@@ -152,6 +169,10 @@ parameter values. Stored time grids may be subsampled from the internal solver
 grids. The corresponding implementations are
 [`dataset/generate_f01.py`](dataset/generate_f01.py) through
 [`dataset/generate_f11.py`](dataset/generate_f11.py).
+
+The included archived-run indexes refer to the preceding experiment version;
+see [reproduction versioning](reproduction/README.md#archive-version) before
+using them for F6 or F8.
 
 The [reproduction scripts](reproduction/README.md) reconstruct objective tables,
 convergence figures and residual summaries from archived runs, and evaluate

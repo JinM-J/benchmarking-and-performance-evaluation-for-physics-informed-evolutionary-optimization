@@ -2,9 +2,9 @@
 
 [Benchmark overview](../README.md) · [Problem definitions](problem_definitions.md) · [Reference solutions](../reference/README.md)
 
-This gallery pairs objective landscapes with views of the corresponding PDE state surfaces. Colors show the objective value F; the height coordinate u in a state-surface panel shows the PDE state. Parameterized problems include several fixed-parameter slices.
+This gallery pairs objective landscapes with views of the corresponding PDE state surfaces. Colors show the objective value F; the height coordinate u in a state-surface panel shows the PDE state. Parameterized problems include several fixed-parameter slices. F6 instead pairs a contour map with a three-dimensional objective surface; its height is F, not u.
 
-**Figure version:** updated on 29 September 2026 using the stored reference fields. Variable labels follow the manuscript equations and figure captions. Stars mark representative points checked against the manuscript reference targets; they do not by themselves establish global optimality. Color limits may use quantiles and need not equal the reference objective value.
+**Figure version:** F6 panels updated on 8 October 2026; other panels updated on 29 September 2026 using the stored reference fields. Variable labels follow the manuscript equations and figure captions. Stars mark representative points checked against the manuscript reference targets; they do not by themselves establish global optimality. Color limits may use quantiles and need not equal the reference objective value.
 
 [F1](#f1) | [F2](#f2) | [F3](#f3) | [F4](#f4) | [F5](#f5) | [F6](#f6) | [F7](#f7) | [F8](#f8) | [F9](#f9) | [F10](#f10) | [F11](#f11)
 
@@ -60,13 +60,13 @@ This gallery pairs objective landscapes with views of the corresponding PDE stat
 
 ## F6
 
-**Convection–diffusion equation with a localized feature.** A small moving state feature creates a localized objective valley around the target time.
+**Convection–diffusion equation with a localized feature.** The objective locates the right-side 5% response of a small moving state feature at the target time. The star is at x = 0.1 + 0.1 sqrt(log(20)), t = 0.7.
 
 [Definition](problems/f06.md) · [Reference calculation](../reference/f06.py)
 
-| Objective landscape / decision-space slices | PDE state surface colored by objective |
+| Objective landscape / decision-space slices | Objective surface |
 | --- | --- |
-| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 PDE state geometry](figures/f06_geometry.png) |
+| ![F6 objective landscape](figures/f06_landscape.png) | ![F6 objective surface](figures/f06_geometry.png) |
 
 ## F7
 

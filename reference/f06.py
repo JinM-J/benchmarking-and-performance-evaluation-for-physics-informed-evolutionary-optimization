@@ -23,7 +23,7 @@ def verify(root, dataset=None, n_points=2048, seed=20260924):
     spec = importlib.util.spec_from_file_location("f6_generation_definition", root / "dataset/generate_f06.py")
     generator = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(generator)
-    expected = dict(C_CONV=.5, NU=.0005, A_PKT=.03, W_PKT=.10, X_S0=-.25, T_STAR=.7, ALPHA_T=.2)
+    expected = dict(C_CONV=.5, NU=.0005, A_PKT=.03, W_PKT=.10, X_S0=-.25, T_STAR=.7, ALPHA_T=.2, RESPONSE_THRESHOLD=.05)
     for key, value in expected.items():
         if getattr(problem_module, key) != value or getattr(generator, key) != value:
             raise AssertionError(f"Definition drift: {key}")
@@ -49,13 +49,14 @@ def verify(root, dataset=None, n_points=2048, seed=20260924):
     for i, value in enumerate([-1., 1.]):
         qb = q.copy(); qb[:, 0] = value
         checks[f"bc_{i}_max_abs"] = float(np.max(abs(generator.exact_u(*qb.T)-problem.physics.boundary_conditions()[i].target(qb))))
-    x_star, t_star = .1, .7
+    x_star, t_star = .1 + .1*np.sqrt(np.log(20.)), .7
     u_star = float(generator.exact_u(x_star, t_star))
-    f_star = float((1-(u_star-generator.background(x_star,t_star))/.03)**2)
+    f_star = float((1-((u_star-generator.background(x_star,t_star))/.03)/.05)**2)
     result = dict(paper_problem="F6", code_problem="f06", constants=expected,
                   dtype="float64", seed=seed, n_points=n_points, threshold=1e-12,
                   checks=checks, continuous_reference=dict(decision=[x_star,t_star], state=u_star, objective=f_star,
-                  constraint_violation=0., proof="F=(1-exp(-z^2))^2+0.2*(t-0.7)^2 >= 0. Equality requires t=0.7 and z=0, hence x=0.1. This is the unique global minimizer of the continuous manufactured field."),
+                  constraint_violation=0., decision_expression=["0.1+0.1*sqrt(log(20))", "0.7"],
+                  proof="F=(1-exp(-z^2)/0.05)^2+max(0,-z)^2+0.2*(t-0.7)^2 >= 0. Equality requires t=0.7 and z=sqrt(log(20)); the penalty excludes the negative root. Thus x=0.1+0.1*sqrt(log(20)) is the unique global minimizer of the continuous manufactured field."),
                   objective_api_checked=False, dataset_metadata_checked=False,
                   limitations=["Autodiff/IC/BC checks use finite sampled points and floating-point arithmetic; the displayed algebra establishes continuous optimality.",
                                "Stored-field interpolation has nonzero error; continuous F*=0 is not a certificate for the interpolated discretization.",
@@ -69,6 +70,11 @@ def verify(root, dataset=None, n_points=2048, seed=20260924):
             for key, value in [("A", .03), ("w", .10)]:
                 np.testing.assert_allclose(metadata["packet"][key], value, rtol=0., atol=1e-15)
             np.testing.assert_allclose([metadata["reference_point"]["x_star"], metadata["reference_point"]["t_star"]], [.1,.7], rtol=0., atol=1e-15)
+            # The archived reference_point identifies the packet center, not
+            # the minimizer of the current right-tail objective.
+            if "optimization_reference_point" in metadata:
+                point = metadata["optimization_reference_point"]
+                np.testing.assert_allclose([point["x_star"], point["t_star"]], [x_star,t_star], rtol=0., atol=1e-15)
             if metadata["packet"]["x_s(t)"] != "-0.25+0.5*t":
                 raise AssertionError("Packet trajectory metadata mismatch")
             np.testing.assert_array_equal(data["x"], np.linspace(-1.,1.,24553))
@@ -84,7 +90,8 @@ def verify(root, dataset=None, n_points=2048, seed=20260924):
         np.testing.assert_allclose([f_actual, violation], [0.,0.], rtol=0., atol=1e-12)
         # Compare the real objective API with an independently reduced expression.
         # No state query uses the stored field in this analytic check.
-        reduced = (1-np.exp(-((q[:,0]+.25-.5*q[:,1])/.10)**2))**2 + .2*(q[:,1]-.7)**2
+        z = (q[:,0]+.25-.5*q[:,1])/.10
+        reduced = (1-np.exp(-z**2)/.05)**2 + np.maximum(0.,-z)**2 + .2*(q[:,1]-.7)**2
         actual = np.array([problem.evaluate_fitness(row, provider) for row in q])
         checks["objective_api_reduced_formula_max_abs"] = float(np.max(abs(actual-reduced)))
         result.update(objective_api_checked=True, dataset_metadata_checked=True,

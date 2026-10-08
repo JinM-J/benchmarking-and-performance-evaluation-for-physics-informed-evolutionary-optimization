@@ -23,7 +23,7 @@ in this overview describe the supplied two- or three-coordinate implementation.
 | [F3 / f03](../docs/problems/f03.md) | x∈[−5,5], t∈[0,1] | Rastrigin, z₁=x−1.9004, z₂=u+1.153 | None |
 | [F4 / f04](../docs/problems/f04.md) | x∈[0,π], t∈[0,2] | Six-hump camel, state offset u−1 | None |
 | [F5 / f05](../docs/problems/f05.md) | x∈[0,3], t∈[0,2] | −x−u+0.5 | Two polynomial inequalities |
-| [F6 / f06](../docs/problems/f06.md) | x∈[−1,1], t∈[0,1] | Local packet-sensitive objective | None |
+| [F6 / f06](../docs/problems/f06.md) | x∈[−1,1], t∈[0,1] | Right-side 5% response objective | None |
 | [F7 / f07](../docs/problems/f07.md) | (x₁,x₂)∈[0,5]² outside four disks | Branin(x₁,u) | Geometric exclusion; see below |
 | [F8 / f08](../docs/problems/f08.md) | x∈[0,2], t∈[0,1] | x²+(u−1)² | u−x²=0 with 0.001 band |
 | [F9 / f09](../docs/problems/f09.md) | x∈[−2,2], t∈[0,2], μ∈[−1,1] | Goldstein–Price, b=J+0.3 | None |
@@ -133,7 +133,8 @@ different data/problem version and requires separate numerical validation.
   `u=0.3 exp(-t) sin(πx)+0.03 exp(-((x+0.25-0.5t)/0.10)^2)`.
   It satisfies `u_t+0.5u_x-0.0005u_xx=s` with the explicitly implemented source
   and exact IC/BC values. The array samples that expression; its interpolation
-  is still approximate. The continuous objective has minimum 0 at `(0.1,0.7)`.
+  is still approximate. The right-side 5% response objective has continuous minimum 0 at
+  `(0.1+0.1 sqrt(log(20)),0.7)`; the archived field is unchanged.
 - **F7:** the sign is **Δu=f**, with
   `f=20(20+x₁²+x₂²)sin(2πx₁)sin(4πx₂)`. Outer BC is 0.2; hole-wall BC is 1.
   Disk centers/radii are `(4.3,3.5,0.5)`, `(1.5,1.2,0.4)`, `(2.2,2.7,0.6)` and
@@ -143,8 +144,9 @@ different data/problem version and requires separate numerical validation.
   This is not a positive algebraic `violation` channel: that method returns zero.
 - **F8:** the solver samples the initial profile on `[0,2)` and uses periodic
   differences with RK4. The periodic extension has an initial seam; do not infer
-  initial smoothness. The surrogate boundary interface matches u and uₓ, not
-  additional second/third derivative boundary losses.
+  initial smoothness. The physics interface declares periodic derivatives through order three; the
+  fixed training configuration uses u and uₓ boundary losses. Reference
+  interpolation wraps spatially and evaluates the exact IC at t=0.
 - **F9/F11:** periodic generator grids omit the spatial right endpoint.
   F9 wraps/clips query coordinates in its normalization path; F11 clips them.
 - **F10:** log-viscosity is stored in descending order and reversed with the

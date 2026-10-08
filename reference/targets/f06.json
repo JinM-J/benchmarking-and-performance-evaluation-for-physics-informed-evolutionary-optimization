@@ -3,7 +3,12 @@
   "f_star_12dp": "0.000000000000",
   "kind": "manufactured_solution_exact_minimum",
   "target": {
-    "x": "0.1",
+    "x": "0.2730818382602286",
     "t": "0.7"
-  }
+  },
+  "target_expression": {
+    "x": "0.1+0.1*sqrt(log(20))",
+    "t": "0.7"
+  },
+  "response_threshold": 0.05
 }

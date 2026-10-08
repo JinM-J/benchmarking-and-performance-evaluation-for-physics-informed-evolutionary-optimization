@@ -55,6 +55,7 @@ class PINNSurrogate(Surrogate):
         self.ic_t_weight = float(config.get("ic_t_weight", 1.0))
         # Optional nondimensionalization; defaults preserve protocol behavior.
         # Output remains physical; autograd supplies chain factors for input/output transforms.
+        self.max_periodic_bc_order = config.get('max_periodic_bc_order', None)
         self.normalize_inputs = bool(config.get("normalize_inputs", False))
         self.output_offset = float(config.get("output_offset", 0.0))
         self.output_scale = float(config.get("output_scale", 1.0))
@@ -87,6 +88,8 @@ class PINNSurrogate(Surrogate):
             self.ic_weight = float(config.get("ic_weight", self.ic_weight))
             self.bc_weight = float(config.get("bc_weight", self.bc_weight))
             self.ic_t_weight = float(config.get("ic_t_weight", self.ic_t_weight))
+            if 'max_periodic_bc_order' in config:
+                self.max_periodic_bc_order = config['max_periodic_bc_order']
             self.normalize_inputs = bool(config.get("normalize_inputs", self.normalize_inputs))
             self.output_offset = float(config.get("output_offset", self.output_offset))
             self.output_scale = float(config.get("output_scale", self.output_scale))
@@ -98,6 +101,10 @@ class PINNSurrogate(Surrogate):
         if self.output_scale <= 0.0 or self.residual_scale <= 0.0:
             raise ValueError("PINN output_scale and residual_scale must be positive")
 
+        if self.max_periodic_bc_order is not None:
+            if isinstance(self.max_periodic_bc_order, (bool, np.bool_)) or not isinstance(self.max_periodic_bc_order, (int, np.integer)) or self.max_periodic_bc_order < 0:
+                raise ValueError('PINN max_periodic_bc_order must be a nonnegative integer or None')
+            self.max_periodic_bc_order = int(self.max_periodic_bc_order)
         self.problem = problem
         self.seed = seed
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -108,9 +115,7 @@ class PINNSurrogate(Surrogate):
             if (not self.input_axes
                     or len(set(self.input_axes)) != len(self.input_axes)
                     or min(self.input_axes) < 0 or max(self.input_axes) >= self._dim):
-                raise ValueError(
-                    f"PINN input_axes={self.input_axes} is invalid for a {self._dim}-dimensional query space"
-                )
+                raise ValueError(f'PINN input_axes={self.input_axes} for {self._dim}-dimensional query space is invalid')
             # PI-DeepONet replaces this network after setup and controls axis reduction itself.
             # For ordinary PINN, layers[0] must match the selected physical axes.
             if type(self) is PINNSurrogate and self.layers[0] != len(self.input_axes):
@@ -169,14 +174,14 @@ class PINNSurrogate(Surrogate):
                     "deriv": tuple(bc.derivative),
                 })
             elif bc.kind in ("periodic", "periodic_derivative"):
+                kind = bc.kind
+                if kind == 'periodic_derivative' and self.max_periodic_bc_order is not None and (len(bc.derivative) > self.max_periodic_bc_order):
+                    if not bc.include_value:
+                        continue
+                    kind = 'periodic'
                 ra, rb = bc.region_pair
                 n = bc.n_points if bc.n_points is not None else bc_budgets[bc.points_key]
-                self.bc_terms.append({
-                    "kind": bc.kind,
-                    "Qa": torch.tensor(ra.sample(n), dtype=torch.float32, device=self.device),
-                    "Qb": torch.tensor(rb.sample(n), dtype=torch.float32, device=self.device),
-                    "deriv": tuple(bc.derivative),
-                })
+                self.bc_terms.append({'kind': kind, 'Qa': torch.tensor(ra.sample(n), dtype=torch.float32, device=self.device), 'Qb': torch.tensor(rb.sample(n), dtype=torch.float32, device=self.device), 'deriv': tuple(bc.derivative), 'include_value': bc.include_value})
             else:
                 raise KeyError(f"Unknown boundary type: {bc.kind}")
 
@@ -306,9 +311,9 @@ class PINNSurrogate(Surrogate):
                 ua_d = self._derivatives(ua, Qa, der)[bc["deriv"]]
                 ub_d = self._derivatives(ub, Qb, der)[bc["deriv"]]
                 dscale = self._derivative_scale(bc["deriv"])
-                loss_bc = (loss_bc
-                           + mse(ua / self.output_scale, ub / self.output_scale)
-                           + mse(ua_d / dscale, ub_d / dscale))
+                if bc.get('include_value', True):
+                    loss_bc = loss_bc + mse(ua / self.output_scale, ub / self.output_scale)
+                loss_bc = loss_bc + mse(ua_d / dscale, ub_d / dscale)
 
         f_res = self._pde_residual(model, self.Q_res)
         mse_res = mse(f_res / self.residual_scale, torch.zeros_like(f_res))

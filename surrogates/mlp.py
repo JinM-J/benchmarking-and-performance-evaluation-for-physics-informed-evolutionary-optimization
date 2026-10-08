@@ -26,22 +26,35 @@ class MLPSurrogate(Surrogate):
         self.lr = float(config.get("lr", 0.008))
         self.lr_schedule = config.get("lr_schedule", "exponential")  # exponential | none
 
+        self.seed_model_init = bool(config.get('seed_model_init', False))
+        self.weight_decay = float(config.get('weight_decay', 0.0))
         self.model = None
         self.optimizer = None
 
     def setup(self, problem, seed: int, config: dict = None):
         if config:
-            self.layers = config.get("layers", self.layers)
-            self.ever_epochs = int(config.get("ever_epochs", self.ever_epochs))
-            self.lr_max = float(config.get("lr_max", self.lr_max))
-            self.lr_min = float(config.get("lr_min", self.lr_min))
-            self.lr = float(config.get("lr", self.lr))
-            self.lr_schedule = config.get("lr_schedule", self.lr_schedule)
+            self.layers = config.get('layers', self.layers)
+            self.ever_epochs = int(config.get('ever_epochs', self.ever_epochs))
+            self.lr_max = float(config.get('lr_max', self.lr_max))
+            self.lr_min = float(config.get('lr_min', self.lr_min))
+            self.lr = float(config.get('lr', self.lr))
+            self.lr_schedule = config.get('lr_schedule', self.lr_schedule)
+            self.seed_model_init = bool(config.get('seed_model_init', self.seed_model_init))
+            self.weight_decay = float(config.get('weight_decay', self.weight_decay))
+        if not np.isfinite(self.weight_decay) or self.weight_decay < 0.0:
+            raise ValueError('MLP weight_decay must be finite and nonnegative')
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self._dim = int(np.asarray(problem.query_bounds, dtype=float).shape[0])
+        if self.seed_model_init:
+            torch.manual_seed(seed)
+            if torch.cuda.is_available():
+                torch.cuda.manual_seed_all(seed)
         self.model = PINNNet(self.layers).to(self.device)
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        if self.weight_decay == 0.0:
+            self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        else:
+            self.optimizer = torch.optim.Adam([{'params': [p for name, p in self.model.named_parameters() if name.endswith('weight')], 'weight_decay': self.weight_decay}, {'params': [p for name, p in self.model.named_parameters() if name.endswith('bias')], 'weight_decay': 0.0}], lr=self.lr)
 
     def _set_lr_by_gen(self, gen: int, maxgen: int) -> float:
         """Use the same exponential learning-rate schedule as PINN."""
