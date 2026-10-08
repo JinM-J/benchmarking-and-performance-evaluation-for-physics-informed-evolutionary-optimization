@@ -62,7 +62,7 @@ mathematical formulation and the manuscript's detailed explanation of these axes
 | [F11](docs/problem_definitions.md#f11) | Parametric forced heat equation | `(x, t, mu)` | Ackley-type objective using state and input work | Parameterized forcing and state–source integral | 40 |
 
 The HF budgets above come from [the main configuration](protocols/main.yaml).
-The current configuration version is **2026-10-08**. The
+The current configuration version is **2026-10-08-r2**. The
 [configuration guide](protocols/README.md) records all problem budgets, the
 fixed F6/F8 model settings and the main, optimizer, constraint, residual and
 illustration repeat schedules.
@@ -119,9 +119,7 @@ Evaluation separates three questions:
    does it produce on specified evaluation points?
 
 The main experimental comparisons use 30 runs per problem–method pair with
-seeds 450–479. The additional data-only FNO comparison is supplied for F6
-(`fno_de`, 300 training steps per fit); the eight common methods remain the
-F1–F11 comparison set. Result summaries report feasible-run counts and the mean and
+seeds 450–479. Result summaries report feasible-run counts and the mean and
 standard deviation of feasible objectives (`ddof=0`). Convergence trajectories
 use the consumed HF archive. Surrogate predictions and unconsumed
 final-population diagnostics do not determine the reported best objective.

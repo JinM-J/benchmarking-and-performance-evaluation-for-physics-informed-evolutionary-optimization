@@ -53,11 +53,7 @@ def main():
     jobs = []
     for p in problems:
         protocol = load_protocol(protocol_path, p.upper())
-        problem_methods = (methods if args.methods is not None else
-                           group.get("methods_by_problem", {}).get(p.upper(), methods))
-        if not problem_methods or len(set(problem_methods)) != len(problem_methods):
-            ap.error(f"Method list for {p} must be nonempty and contain no duplicates")
-        for m in problem_methods:
+        for m in methods:
             # Validate method/profile availability without fitting or loading data.
             make_method(m, protocol, args.base_seed)
             for seed in range(args.base_seed, args.base_seed + args.runs):

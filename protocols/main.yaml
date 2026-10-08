@@ -1,5 +1,5 @@
 # Main experiment configuration for F1--F11.
-suite_version: '2026-10-08'
+suite_version: '2026-10-08-r2'
 protocol:
   name: main
   description: Selected main-experiment settings; F09-F11 use full-decision Top-3;
@@ -9,8 +9,6 @@ run_groups:
     base_seed: 450
     runs: 30
     methods: [gp_de, pigp_de, pinn_de, rbfn_de, mlp_de, pino_de, ji_sade_grm, glosade]
-    methods_by_problem:
-      F06: [gp_de, pigp_de, pinn_de, rbfn_de, mlp_de, pino_de, fno_de, ji_sade_grm, glosade]
   optimizers:
     problems: [f06, f08]
     base_seed: 450
@@ -496,18 +494,6 @@ problems:
     penalty_min: 10.0
     pop_size: 100
     surrogates:
-      fno:
-        ever_epochs: 300
-        grid_shape: [64, 64]
-        hidden_channels: 32
-        lr: 0.001
-        lr_max: 0.001
-        lr_min: 1.0e-05
-        n_layers: 4
-        n_modes: [12, 12]
-        parameter_batch_size: 16
-        projection_channels: 64
-        seed_model_init: true
       gp:
         length_scale_bounds:
         - 0.001

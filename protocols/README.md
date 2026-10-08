@@ -1,7 +1,7 @@
 # Experiment configuration
 
 [`main.yaml`](main.yaml) is the current F1-F11 configuration, version
-`2026-10-08`. It includes budgets, surrogate parameters, evaluation grids and
+`2026-10-08-r2`. It includes budgets, surrogate parameters, evaluation grids and
 repeat schedules. Run commands from the repository root; use `--dry-run` to
 inspect a schedule before starting experiments.
 
@@ -39,10 +39,8 @@ reference point is `(0.1 + 0.1 * sqrt(log(20)), 0.7)`, with objective zero.
 The PDE and stored field are unchanged. [The problem definition](../docs/problem_definitions.md#f6)
 states the objective, derivation and interpolation distinction.
 
-PINN, PINO and MLP use **100 steps per fit**. The additional data-only FNO
-comparison uses **300 steps per fit**, a 64x64 grid and 12x12 Fourier modes.
-Its `fno_de` configuration is supplied for F6 only; it is not a complete
-F1-F11 comparison. F6 has no additional algebraic constraints, so the
+PINN, PINO and MLP use **100 steps per fit**. F6 has no additional algebraic
+constraints, so the
 constraint-handling comparison does not apply.
 
 ## F8
@@ -70,7 +68,7 @@ The `run_groups` section of `main.yaml` defines these schedules:
 
 | Group | Problems | Seeds | Methods / purpose |
 | --- | --- | --- | --- |
-| `main` | F1-F11 | 450-479 | Eight common methods; F6 additionally includes FNO |
+| `main` | F1-F11 | 450-479 | Eight common methods |
 | `optimizers` | F6, F8 | 450-479 | PSO and CMA-ES with GP, PIGP, PINN, RBFN and PINO; DE results come from `main` |
 | `constraints` | F8 | 450-479 | Epsilon and feasibility rules with GP, PIGP, PINN and PINO; penalty results come from `main` |
 | `residuals` | F6, F8 | 481-490 | Six field models; save final models for offline residual evaluation |
