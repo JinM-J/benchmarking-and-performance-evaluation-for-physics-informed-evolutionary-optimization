@@ -1,8 +1,8 @@
-# Main experiment configuration for F1--F11.
-suite_version: '2026-10-08-r2'
+# Default paper configuration for F1--F11.
+suite_version: '2026-10-08-paper'
 protocol:
   name: main
-  description: Selected main-experiment settings; F09-F11 use full-decision Top-3;
+  description: Default paper settings; F09-F11 use full-decision Top-3;
     F06 uses the right-tail objective with HF70; F08 uses HF145.
 run_groups:
   main:

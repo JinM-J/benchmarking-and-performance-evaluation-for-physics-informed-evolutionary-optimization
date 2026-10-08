@@ -1,9 +1,14 @@
 # Experiment configuration
 
-[`main.yaml`](main.yaml) is the current F1-F11 configuration, version
-`2026-10-08-r2`. It includes budgets, surrogate parameters, evaluation grids and
+[`main.yaml`](main.yaml) is the default paper configuration for F1-F11, version
+`2026-10-08-paper`. It includes budgets, surrogate parameters, evaluation grids and
 repeat schedules. Run commands from the repository root; use `--dry-run` to
 inspect a schedule before starting experiments.
+
+Single-run and batch commands default to this configuration. Its F6 and F8
+settings are the fixed settings for the current paper experiments. Batch
+reproduction defaults to the `main` group: 30 runs with seeds 450-479.
+The reduced installation demonstration is configured separately.
 
 ## Search and state-label budgets
 
@@ -91,11 +96,14 @@ python experiments/batch.py --protocol main --group illustrations --dry-run
 
 Remove `--dry-run` to execute. Group outputs default to `results/<group>/`;
 `--output-root` selects another empty location. Explicit `--methods`, `--runs`
-and `--base-seed` override the schedule. Without `--group`, the batch launcher
-retains its single-run default. Summarize the main group with:
+and `--base-seed` override the schedule. Omitting `--group` with the default
+`main` protocol selects the paper's `main` group. Single-run and batch main
+outputs share `results/main/`, which is also the aggregator's default.
+Other protocols retain their one-run batch default unless a group is selected.
+Summarize the main group with:
 
 ```bash
-python experiments/aggregate.py --protocol main --results results/main
+python experiments/aggregate.py
 ```
 
 Every new run saves the complete `protocol_config`, applied `surrogate_config`,

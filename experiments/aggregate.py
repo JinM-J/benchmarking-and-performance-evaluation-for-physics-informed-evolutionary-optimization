@@ -66,10 +66,11 @@ def aggregate_rows(rows):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--results", type=Path, default=ROOT / "results")
+    ap.add_argument("--results", type=Path, help="Results root; main-protocol default: results/main")
     ap.add_argument("--protocol", default="main", help="Exact protocol name before /problem")
     ap.add_argument("--out", type=Path, default=None)
     args = ap.parse_args()
+    args.results = args.results or (ROOT / "results" / "main" if args.protocol == "main" else ROOT / "results")
     rows = []
     for path in sorted(args.results.glob("*/*/seed*/history.npz")):
         row = summarize_run(path)

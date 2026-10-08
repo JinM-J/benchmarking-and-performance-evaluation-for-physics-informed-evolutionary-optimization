@@ -4,7 +4,7 @@
 From the repository root:
     python experiments/run.py --problem f01 --method gp_de --protocol main --seed 450
 
-Outputs under results/<problem>/<method>/seed<seed>/:
+Main-protocol outputs under results/main/<problem>/<method>/seed<seed>/:
     history.npz: consumed-HF archive, final population, and snapshot history.
     resolved_config.yaml: complete resolved configuration for this run."""
 import argparse
@@ -45,12 +45,12 @@ def main():
     ap = argparse.ArgumentParser(description="Run the PDE-constrained optimization benchmark")
     ap.add_argument("--problem", required=True, help="Problem identifier, e.g. f01")
     ap.add_argument("--method", required=True, help="Method identifier, e.g. gp_de")
-    ap.add_argument("--protocol", default="main", help="Protocol name (protocols/<name>.yaml)")
+    ap.add_argument("--protocol", default="main", help="Protocol name (protocols/<name>.yaml); default: current paper settings")
     ap.add_argument("--seed", type=int, default=450)
     ap.add_argument("--data", default=None, help="Reference NPZ path (default: dataset/fNN.npz)")
     ap.add_argument("--protocol-key", default=None,
                     help="Problem key in the protocol (default: --problem); external problems may reuse a key such as f01")
-    ap.add_argument("--out", default=None, help="Output directory (default: results/<problem>/<method>/seed<seed>)")
+    ap.add_argument("--out", default=None, help="Output directory; main-protocol default: results/main/<problem>/<method>/seed<seed>")
     ap.add_argument("--export-surrogate-grid", type=int, default=0,
                     help="Export the final field or central 3D slice; nodes per axis, 0 disables; no additional fitting or HF queries")
     ap.add_argument("--save-final-surrogate", action="store_true",
@@ -89,8 +89,9 @@ def main():
             f"Missing reference dataset: {data_path}. "
             "See dataset/README.md; no data are generated automatically."
         )
+    results_root = ROOT / "results" / "main" if args.protocol == "main" else ROOT / "results"
     out_dir = Path(args.out) if args.out else (
-        ROOT / "results" / args.problem / args.method / f"seed{args.seed}"
+        results_root / args.problem / args.method / f"seed{args.seed}"
     )
     if args.save_final_surrogate:
         if getattr(method, "needs_decision_evaluator", False):

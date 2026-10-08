@@ -62,7 +62,10 @@ mathematical formulation and the manuscript's detailed explanation of these axes
 | [F11](docs/problem_definitions.md#f11) | Parametric forced heat equation | `(x, t, mu)` | Ackley-type objective using state and input work | Parameterized forcing and state–source integral | 40 |
 
 The HF budgets above come from [the main configuration](protocols/main.yaml).
-The current configuration version is **2026-10-08-r2**. The
+The default paper configuration is **2026-10-08-paper** in
+[`protocols/main.yaml`](protocols/main.yaml). Single-run and batch commands
+load it by default, including the fixed F6 and F8 settings below. Batch
+reproduction defaults to 30 seeds, 450-479. The
 [configuration guide](protocols/README.md) records all problem budgets, the
 fixed F6/F8 model settings and the main, optimizer, constraint, residual and
 illustration repeat schedules.
@@ -202,11 +205,13 @@ then run experiments:
 
 ```bash
 python experiments/run.py --problem f06 --method gp_de --protocol main --seed 450
-python experiments/batch.py --protocol main --group main --dry-run
-python experiments/aggregate.py --protocol main --results results/main
+python experiments/batch.py --dry-run
+python experiments/aggregate.py
 ```
 
-The batch command previews the jobs; remove `--dry-run` to execute them.
+The batch command previews the default 30-run paper schedule; remove
+`--dry-run` to execute it. Single runs, the main batch and aggregation share
+`results/main/` by default. The installation demo uses its own reduced budget.
 Use `--problems f06,f08` to run only those problems. Each output records the
 complete configuration, protocol checksum and actual HF counts. Saved-model
 and illustration schedules are documented in [the configuration guide](protocols/README.md).
