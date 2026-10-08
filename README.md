@@ -128,6 +128,31 @@ not certify global optimality. The individual reports describe their scope,
 including the distinction between continuous and discrete integral objectives.
 See [reference solutions](reference/README.md) for the per-problem commands.
 
+### Reference PDE solvers and stored grids
+
+We use the following methods to compute the reference PDE fields for F1–F11.
+The stored grids give the dimensions of the archived state arrays.
+
+| Problem | Computation | Stored grid |
+| --- | --- | --- |
+| F1 | Centered spatial differences, forward Euler | 6001 × 80001 |
+| F2 | Centered wave scheme, CFL number 1 | 16001 × 6401 |
+| F3 | Centered spatial differences, forward Euler | 20001 × 20001 |
+| F4 | Centered spatial differences, forward Euler | 1201 × 640001 |
+| F5 | Centered spatial differences, forward Euler | 1001 × 50001 |
+| F6 | Evaluation of the prescribed solution | 24553 × 9601 |
+| F7 | Nine-point Poisson stencil, conjugate gradient | 1000 × 1000 |
+| F8 | Periodic spatial differences, fourth-order Runge–Kutta | 200 × 10001 |
+| F9 | Split reaction steps and FFT diffusion | 500 × 2001 × 1000 |
+| F10 | Rusanov flux/RK2 and sine-transform diffusion | 1000 × 2001 × 1000 |
+| F11 | Split source steps and FFT diffusion | 500 × 2001 × 1000 |
+
+For F7, both grid axes are spatial. For F9–F11, the third axis indexes the
+parameter values. Stored time grids may be subsampled from the internal solver
+grids. The corresponding implementations are
+[`dataset/generate_f01.py`](dataset/generate_f01.py) through
+[`dataset/generate_f11.py`](dataset/generate_f11.py).
+
 The [reproduction scripts](reproduction/README.md) reconstruct objective tables,
 convergence figures and residual summaries from archived runs, and evaluate
 saved surrogate models. Input fingerprints identify the data and artifacts used.
