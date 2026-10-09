@@ -6,27 +6,26 @@ test problems, F1–F11, together with multiple surrogate models, optimizers,
 constraint-handling strategies, reference-solution calculations and experiment
 reproduction scripts.
 
-In this work, we focus on a surrogate-assisted form of physics-informed
-evolutionary optimization, where physics is primarily incorporated into surrogate
-modeling to support the evolutionary search for expensive constrained optimization
-problems (ECOPs) with PDE-based constraints. The eleven benchmark problems combine
-PDE states with algebraic objectives and constraints, spanning PDE dynamics,
-landscape characteristics, state–decision coupling, and feasible-region geometry.
+Physics is incorporated into surrogate modeling to support evolutionary search.
+The problems combine PDE states with algebraic objectives and constraints,
+covering different dynamics, landscapes, state–decision couplings and feasible
+regions.
 
-[Benchmark design](#benchmark-design) · [Test suite](#test-suite-f1f11) ·
-[Full problem definitions](docs/problem_definitions.md) · [Evaluation](#models-optimizers-and-evaluation) ·
-[Experiment configuration](protocols/README.md) · [Quick start](#quick-start)
+[Test suite](#test-suite-f1f11) · [Quick start](#quick-start) ·
+[Experiment configuration](#experiment-configuration) ·
+[Evaluation](#models-optimizers-and-evaluation) ·
+[Reference solvers](#reference-pde-solvers-and-stored-grids) ·
+[Documentation](#documentation)
+
+![Illustration of feasible-region geometry under different constraints](docs/figures/feasible_region_geometry.png)
+
+*Manuscript illustration of a PDE state surface combined with different algebraic
+and geometric constraints.*
 
 ## Benchmark design
 
-The benchmark aims to extract and systematically control the key factors that
-determine optimization difficulty in ECOPs with PDE-based constraints. Such an
-abstraction enables reproducible evaluation and facilitates the analysis of how
-different physical and optimization factors affect algorithmic performance.
-
-The benchmark test functions are characterized along four complementary axes,
-which represent different sources of complexity arising from PDE-based
-constraints, algebraic objective landscapes, and their interactions:
+The test suite controls four sources of optimization difficulty in expensive
+constrained optimization problems (ECOPs) with PDE-based constraints:
 
 - **Type of PDE dynamics:** diffusion, reaction–diffusion, convection–diffusion,
   wave propagation, elliptic equilibrium, and high-order nonlinear dissipation.
@@ -37,71 +36,112 @@ constraints, algebraic objective landscapes, and their interactions:
 - **Feasible-region geometry:** no additional algebraic constraints, inequalities,
   equality manifolds, and geometric restrictions.
 
-![Illustration of feasible-region geometry under different constraints](docs/figures/feasible_region_geometry.png)
-
-*Manuscript illustration of a PDE state surface combined with different algebraic
-and geometric constraints.*
-
 The [benchmark design document](docs/benchmark_design.md) gives the unified
 mathematical formulation and the manuscript's detailed explanation of these axes.
 
 ## Test suite: F1–F11
 
-| Problem | PDE model | Decision variables | Objective / constraints | Main feature | HF budget |
-| --- | --- | --- | --- | --- | ---: |
-| [F1](docs/problem_definitions.md#f1) | Viscous Burgers equation | `(x, t)` | Sinusoidal fractional objective; two inequalities | Nonlinear dynamics and constrained search | 40 |
-| [F2](docs/problem_definitions.md#f2) | Wave equation | `(x, t, z)` | Quadratic objective; two equality tolerance bands | Extra algebraic variable and second-order time derivative | 60 |
-| [F3](docs/problem_definitions.md#f3) | Allen–Cahn-type reaction–diffusion equation | `(x, t)` | Rastrigin-type objective | Multimodal objective coupled to a nonlinear field | 40 |
-| [F4](docs/problem_definitions.md#f4) | Forced heat equation | `(x, t)` | Six-hump camel objective | Spatially segmented, time-dependent forcing | 40 |
-| [F5](docs/problem_definitions.md#f5) | Forced heat equation | `(x, t)` | Linear objective in transformed coordinates; polynomial inequalities | Nonlinear algebraic feasibility | 40 |
-| [F6](docs/problem_definitions.md#f6) | Convection–diffusion equation with a manufactured solution | `(x, t)` | Right-side 5% response objective | Local packet-tail accuracy important to optimization | 70 |
-| [F7](docs/problem_definitions.md#f7) | Steady Poisson equation | `(x1, x2)` | Branin-type objective; perforated spatial domain | Irregular geometry and boundary conditions | 60 |
-| [F8](docs/problem_definitions.md#f8) | Kuramoto–Sivashinsky equation | `(x, t)` | Quadratic objective; equality tolerance band | Fourth-order spatial derivatives | 145 |
-| [F9](docs/problem_definitions.md#f9) | Parametric reaction–diffusion equation | `(x, t, mu)` | Goldstein–Price-type objective using local state and a state integral | Parameter-dependent state and integral coupling | 40 |
-| [F10](docs/problem_definitions.md#f10) | Parametric Burgers equation | `(x, t, lognu)` | Shifted Rosenbrock objective using state and dissipation | Viscosity-dependent dynamics and derivative-based integral | 40 |
-| [F11](docs/problem_definitions.md#f11) | Parametric forced heat equation | `(x, t, mu)` | Ackley-type objective using state and input work | Parameterized forcing and state–source integral | 40 |
+| Problem | PDE model | Decision variables | Objective / constraints |
+| --- | --- | --- | --- |
+| [F1](docs/problem_definitions.md#f1) | Viscous Burgers | `(x, t)` | Sinusoidal fractional objective; two inequalities |
+| [F2](docs/problem_definitions.md#f2) | Wave | `(x, t, z)` | Quadratic objective; two equality tolerance bands |
+| [F3](docs/problem_definitions.md#f3) | Allen–Cahn-type reaction–diffusion | `(x, t)` | Rastrigin-type objective |
+| [F4](docs/problem_definitions.md#f4) | Forced heat | `(x, t)` | Six-hump camel objective |
+| [F5](docs/problem_definitions.md#f5) | Forced heat | `(x, t)` | Linear objective in transformed coordinates; polynomial inequalities |
+| [F6](docs/problem_definitions.md#f6) | Convection–diffusion, manufactured solution | `(x, t)` | Right-side 5% response objective |
+| [F7](docs/problem_definitions.md#f7) | Steady Poisson | `(x1, x2)` | Branin-type objective; perforated spatial domain |
+| [F8](docs/problem_definitions.md#f8) | Kuramoto–Sivashinsky | `(x, t)` | Quadratic objective; equality tolerance band |
+| [F9](docs/problem_definitions.md#f9) | Parametric reaction–diffusion | `(x, t, mu)` | Goldstein–Price-type objective with local state and state integral |
+| [F10](docs/problem_definitions.md#f10) | Parametric Burgers | `(x, t, lognu)` | Shifted Rosenbrock objective with state and dissipation |
+| [F11](docs/problem_definitions.md#f11) | Parametric forced heat | `(x, t, mu)` | Ackley-type objective with state and input work |
 
-The HF budgets above come from [the main configuration](protocols/main.yaml).
+The [full problem definitions](docs/problem_definitions.md) give all objectives,
+PDEs, initial/boundary conditions, constraints and reference-solution calculations.
+The [problem gallery](docs/problem_gallery.md) provides objective maps,
+state-surface views and parameter slices for all eleven problems.
+
+## Quick start
+
+Use Python 3.11 and run commands from the repository root.
+
+### Installation and small demo
+
+```bash
+python -m pip install -r requirements-analysis.txt
+python examples/demo_f06.py --out outputs/demo_f06
+```
+
+The demo generates its own small F6 field, trains a surrogate and runs
+optimization with 12 HF queries. It checks installation with a smaller grid and
+budget than the paper configuration, without requiring the separately supplied
+reference fields.
+
+### Run paper experiments
+
+Large reference fields and archived experiment outputs are supplied separately
+from this source repository. Import and validate the reference fields using
+[the data instructions](dataset/README.md) before running paper experiments.
+The [data manifest](dataset/reference_manifest.json) records the required files,
+sizes, shapes and checksums.
+
+```bash
+python experiments/run.py --problem f01 --method gp_de --protocol main --seed 450
+python experiments/batch.py --dry-run
+python experiments/aggregate.py
+```
+
+The batch command previews the default 30-run paper schedule; remove
+`--dry-run` to execute it. Single runs, the main batch and aggregation share
+`results/main/` by default. Use `--problems` to select a subset of problems.
+Each output records the complete configuration, protocol checksum and actual
+HF counts.
+
+### Reconstruct archived results
+
+The [reproduction scripts](reproduction/README.md) rebuild objective tables,
+convergence figures and residual summaries from separately supplied archived
+runs, and evaluate saved surrogate models. This workflow reads existing
+artifacts rather than repeating optimization.
+
+Archive indexes are tied to their recorded code version. Follow
+[reproduction versioning](reproduction/README.md#archive-version) when replaying
+them; they do not describe all experiments under the current configuration.
+
+## Experiment configuration
+
 The default paper configuration is **2026-10-08-paper** in
-[`protocols/main.yaml`](protocols/main.yaml). Single-run and batch commands
-load it by default, including the fixed F6 and F8 settings below. Batch
-reproduction defaults to 30 seeds, 450-479. The
-[configuration guide](protocols/README.md) records all problem budgets, the
-fixed F6/F8 model settings and the main, optimizer, constraint, residual and
-illustration repeat schedules.
-**All F1–F11 objective functions, PDEs, initial/boundary conditions, constraints
-and reference-solution calculations are collected in the
-[full problem definitions document](docs/problem_definitions.md).**
+[`protocols/main.yaml`](protocols/main.yaml). Single-run and batch commands load
+it by default. The main comparison uses 30 runs per problem–method pair, with
+seeds 450–479.
 
-The current F6 objective targets the packet's right-side 5% response. Its
-continuous reference point is `(0.1 + 0.1 sqrt(log(20)), 0.7)` with objective
-zero. The PDE, stored field and solver grid are unchanged.
+### Search and state-label budgets
 
 | Problem | Initial labels | Population | Generations | Update interval | Labels per update | Total HF labels |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| F1 | 10 | 100 | 100 | 10 | 3 | 40 |
+| F2 | 15 | 100 | 150 | 10 | 3 | 60 |
+| F3 | 10 | 100 | 100 | 10 | 3 | 40 |
+| F4 | 10 | 50 | 100 | 10 | 3 | 40 |
+| F5 | 10 | 100 | 100 | 10 | 3 | 40 |
 | F6 | 20 | 100 | 100 | 10 | 5 | 70 |
+| F7 | 15 | 100 | 150 | 10 | 3 | 60 |
 | F8 | 100 | 100 | 150 | 10 | 3 | 145 |
+| F9 | 10 | 100 | 100 | 10 | 3 | 40 |
+| F10 | 10 | 100 | 100 | 10 | 3 | 40 |
+| F11 | 10 | 100 | 100 | 10 | 3 | 40 |
 
-For F8, GP uses a Matérn 3/2 kernel with length-scale bounds `[0.1, 100]`
-and no mean centering; PIGP uses bounds `[0.01, 100]` and no mean centering.
-PINN/PINO use 300 training steps per fit; MLP uses 500. Their data/residual
-weights, learning rates and boundary-loss settings are fixed in
-[the main configuration](protocols/main.yaml). F8 state queries use periodic
-spatial interpolation. The two self-managed baselines retain their own
-initial sampling and search rules under the same total HF budget.
+For field-surrogate methods, the HF label budget is
+`initial + floor(generations / interval) * labels_per_update`. Generations count
+optimizer iterations, not network training steps. The two decision-level
+literature baselines retain their own initialization and search rules under the
+same total HF budget.
 
-### Visual examples
-
-These figures show two contrasting problem landscapes. Variable labels and
-representative reference markers follow the manuscript. Numerical definitions
-and verification scope are given in the full problem definitions.
-
-| F6: localized objective valley | F7: perforated spatial domain |
-| --- | --- |
-| ![F6 objective landscape](docs/figures/f06_landscape.png) | ![F7 objective landscape](docs/figures/f07_landscape.png) |
-
-The [problem gallery](docs/problem_gallery.md) includes objective maps,
-state-surface views and parameter slices for all eleven problems.
+Surrogate settings, including kernel parameters, network architectures, training
+steps, loss weights and learning rates, are specified per problem in
+[`protocols/main.yaml`](protocols/main.yaml). The
+[configuration guide](protocols/README.md) documents these settings and the
+main, optimizer, constraint, residual and illustration schedules. Residual and
+illustration runs are separate from the 30-run main statistics.
 
 ## Models, optimizers and evaluation
 
@@ -121,8 +161,7 @@ Evaluation separates three questions:
    approximate the field, and what PDE and initial/boundary-condition residuals
    does it produce on specified evaluation points?
 
-The main experimental comparisons use 30 runs per problem–method pair with
-seeds 450–479. Result summaries report feasible-run counts and the mean and
+Result summaries report feasible-run counts and the mean and
 standard deviation of feasible objectives (`ddof=0`). Convergence trajectories
 use the consumed HF archive. Surrogate predictions and unconsumed
 final-population diagnostics do not determine the reported best objective.
@@ -138,7 +177,7 @@ Diagnostic evaluations and auxiliary reference quadrature are outside this
 label counter. See [the evaluation conventions](methods/README.md#budget-and-reporting)
 for the exact accounting and integral-objective behavior.
 
-## Reference solutions and reproducibility
+## Reference solutions
 
 Each problem has a matching reference entry point, `reference/f01.py` through
 `reference/f11.py`, and a target record under `reference/targets/`. Depending on
@@ -151,6 +190,15 @@ discrete problem are checked separately. Numerical root precision alone does
 not certify global optimality. The individual reports describe their scope,
 including the distinction between continuous and discrete integral objectives.
 See [reference solutions](reference/README.md) for the per-problem commands.
+
+Reference-value checks can be run independently of optimization:
+
+```bash
+python reference/f01.py --output outputs/f01_reference.json
+```
+
+Data requirements and verification scope vary by problem and are stated in the
+[reference guide](reference/README.md).
 
 ### Reference PDE solvers and stored grids
 
@@ -177,50 +225,21 @@ grids. The corresponding implementations are
 [`dataset/generate_f01.py`](dataset/generate_f01.py) through
 [`dataset/generate_f11.py`](dataset/generate_f11.py).
 
-The included archived-run indexes refer to the preceding experiment version;
-see [reproduction versioning](reproduction/README.md#archive-version) before
-using them for F6 or F8.
+See [the data guide](dataset/README.md) for array conventions, data validation
+and generation requirements.
 
-The [reproduction scripts](reproduction/README.md) reconstruct objective tables,
-convergence figures and residual summaries from archived runs, and evaluate
-saved surrogate models. Input fingerprints identify the data and artifacts used.
-Large reference fields and archived experiment outputs are not included in this
-repository; the data manifest specifies the required reference files.
+## Documentation
 
-## Quick start
-
-Use Python 3.11 and run commands from the repository root:
-
-```bash
-python -m pip install -r requirements-analysis.txt
-python examples/demo_f06.py --out outputs/demo_f06
-```
-
-The demo generates a small F6 field, trains a surrogate and runs optimization
-with 12 HF queries. It checks installation with a smaller grid and budget than
-the main experiment configuration.
-
-Import the reference fields using [the data instructions](dataset/README.md),
-then run experiments:
-
-```bash
-python experiments/run.py --problem f06 --method gp_de --protocol main --seed 450
-python experiments/batch.py --dry-run
-python experiments/aggregate.py
-```
-
-The batch command previews the default 30-run paper schedule; remove
-`--dry-run` to execute it. Single runs, the main batch and aggregation share
-`results/main/` by default. The installation demo uses its own reduced budget.
-Use `--problems f06,f08` to run only those problems. Each output records the
-complete configuration, protocol checksum and actual HF counts. Saved-model
-and illustration schedules are documented in [the configuration guide](protocols/README.md).
-Reference-value checks can be run independently:
-
-```bash
-python reference/f06.py --output outputs/f06_reference.json
-python reference/f01.py --output outputs/f01_reference.json
-```
+| Topic | Guide |
+| --- | --- |
+| Benchmark motivation and mathematical formulation | [Benchmark design](docs/benchmark_design.md) |
+| All F1–F11 definitions and reference calculations | [Problem definitions](docs/problem_definitions.md) |
+| Objective maps, state surfaces and parameter slices | [Problem gallery](docs/problem_gallery.md) |
+| Model definitions, method identifiers and evaluation conventions | [Methods and evaluation](methods/README.md) |
+| Budgets, model settings and repeat schedules | [Experiment configuration](protocols/README.md) |
+| Reference-field import, validation and generation | [Reference data](dataset/README.md) |
+| Per-problem reference-value commands and verification scope | [Reference solutions](reference/README.md) |
+| Archived-result reconstruction and saved-model evaluation | [Reproduction](reproduction/README.md) |
 
 ## Repository layout
 
