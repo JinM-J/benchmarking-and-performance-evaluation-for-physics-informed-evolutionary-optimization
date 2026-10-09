@@ -2,7 +2,6 @@
 
 The algebraic zero target alone does not establish PDE reachability."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -22,8 +21,6 @@ def main():
     if args.output and args.output.exists():
         parser.error("Output exists; choose a different file.")
     result = verify("f03", args.data_dir)
-    result["script_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
-    result["helper_sha256"] = hashlib.sha256((ROOT / "reference/common/candidates.py").read_bytes()).hexdigest()
     payload = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

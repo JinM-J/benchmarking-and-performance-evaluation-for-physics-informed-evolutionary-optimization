@@ -54,7 +54,7 @@ threshold is additional to those bands.
 
 The aggregator reports the feasible-run objective mean and standard
 deviation (`ddof=0`), separately recording total and feasible counts. A run with
-no feasible archive entry has no feasible objective. Protocol and dataset hash
+no feasible archive entry has no feasible objective. Protocol and dataset filename
 remain part of each group key.
 
 ## Literature baseline attribution

@@ -6,7 +6,6 @@ certificate. Supply --data-dir to also check available recorded decisions
 against stored PDE fields. Large compressed fields are reported as unsupported
 instead of silently allocating/decompressing several GB.
 """
-import hashlib
 import importlib
 import json
 from pathlib import Path
@@ -128,7 +127,7 @@ def field_point(path, problem, decision):
         with archive.open(info) as stream:
             shape, _, dtype = read_header(stream)
         description = {"stored_shape": list(shape), "stored_dtype": str(dtype),
-                       "file_bytes": path.stat().st_size, "sha256_status": "not_computed"}
+                       "file_bytes": path.stat().st_size}
     if info.compress_type != zipfile.ZIP_STORED and info.file_size > SMALL_FIELD_BYTES:
         return dict(description, status="unsupported_large_compressed_field",
                     reason="Sparse checking cannot map compressed u.npy; full decompression was not requested.")
@@ -207,7 +206,6 @@ def verify(code, data_dir=None):
     row.update(
         schema="reference-candidate-verification-v1",
         reference_source=str(source.relative_to(ROOT)),
-        reference_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
         scope="Reference-candidate substitution and optional stored-field evaluation; no optimization or PDE solve.",
         precision_note="Float64 substitution errors do not certify stored decimal digits or global optimality.",
         mode="algebra_and_requested_pde_points" if data_dir else "algebra_only",

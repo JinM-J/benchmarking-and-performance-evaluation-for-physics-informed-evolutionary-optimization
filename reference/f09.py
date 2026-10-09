@@ -7,7 +7,6 @@ No PDE data are generated.
 """
 import argparse
 import ast
-import hashlib
 import json
 import sys
 from pathlib import Path
@@ -107,7 +106,6 @@ def verify(source_path):
         "paper_problem": "F9",
         "code_problem": "f09",
         "source_file": "problems/f09.py",
-        "source_sha256": hashlib.sha256(source_bytes).hexdigest(),
         "sympy_version": sp.__version__,
         "arithmetic": "Exact rational algebra from decimal source literals",
         "source_objective_expression": str(objective),
@@ -147,7 +145,6 @@ def main():
         sys.path.insert(0, str(args.root))
         from reference.common import integral
         result["stored_field"] = integral.solve("F9", args.data_dir)
-        result["solver_sha256"] = hashlib.sha256(Path(integral.__file__).read_bytes()).hexdigest()
     payload = json.dumps(result, indent=2, ensure_ascii=True) + "\n"
     if args.output is None:
         print(payload, end="")

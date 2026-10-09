@@ -13,19 +13,14 @@ python reproduction/evaluate_checkpoint.py --snapshot /path/to/snapshot \
 ```
 
 - `reproduce_optimization.py` reconstructs per-run objectives, mean/standard
-  deviation tables and convergence plots. It verifies input checksums and uses
-  the consumed HF archive. `--include-supplements` includes the optimizer and
-  constraint-handling comparisons.
+  deviation tables and convergence plots using the consumed HF archive.
+  `--include-supplements` includes the optimizer and constraint-handling comparisons.
 - `reproduce_residuals.py` reconstructs PDE residual tables and optional initial/
   boundary-condition tables at their recorded resolutions.
-- `evaluate_checkpoint.py` reloads a trusted saved model, checks its predictions
-  and computes PDE residuals. F7 also requires `--data-dir` containing the data
-  filename recorded in that snapshot. This command does not train the model.
+- `evaluate_checkpoint.py` reloads a saved model and computes PDE residuals on
+  CPU by default. F7 also requires `--data-dir` containing the data filename
+  recorded in that snapshot. This command does not train the model.
 
-`metadata/` contains the run indexes, checksums, plot seeds and comparison values
-for the supplied artifacts. Output problem IDs use F1–F11. Reproduction uses
-the configurations, problem identities and fingerprints recorded with each
-artifact; these records determine which inputs belong together.
-
-Large fields, saved models and run outputs are supplied separately from this
-source repository.
+`metadata/` contains run indexes and plot selections for the supplied artifacts.
+Output problem IDs use F1–F11. Large fields, saved models and run outputs are
+supplied separately from this source repository.

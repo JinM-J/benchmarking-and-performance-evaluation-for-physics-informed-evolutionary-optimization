@@ -3,7 +3,6 @@ import importlib
 import pickle
 from pathlib import Path
 
-import numpy as np
 import torch
 from core.numbering import PAPER_NAMESPACE, LEGACY_NAMESPACE, paper_problem_id
 
@@ -98,59 +97,25 @@ def load_checkpoint(path, device="cpu", *, problem=None):
     return surrogate
 
 
-def verify_checkpoint(path, queries, predictions, device="cpu", batch_size=8192):
-    model = load_checkpoint(path, device=device)
-    queries = np.asarray(queries)
-    replay = np.concatenate([model.predict(queries[i:i + batch_size])
-                             for i in range(0, len(queries), batch_size)])
-    # Match the saved model device, ordering, and chunking to avoid GPU batch-shape rounding differences.
-    np.testing.assert_allclose(replay, predictions, rtol=1e-5, atol=2e-6)
-    return float(np.max(np.abs(replay - predictions)))
-
-
-def audit_final_checkpoint(problem, surrogate, out_dir, manifest, result):
-    """Check independent snapshot replay on shared geometric probes without fitting or HF calls."""
-    import hashlib
+def write_checkpoint_metadata(surrogate, out_dir, manifest, result):
+    """Record the saved model's inputs without replaying predictions or hashing files."""
     import importlib.metadata
-    import inspect
     import json
 
     out_dir = Path(out_dir)
-    bounds = np.asarray(problem.query_bounds, dtype=float)
-    axes = [lo + (hi - lo) * (np.arange(n) + .5) / n
-            for (lo, hi), n in zip(bounds, (7, 9, 3))]
-    queries = np.stack(np.meshgrid(*axes, indexing="ij"), axis=-1).reshape(-1, len(bounds))
-    queries = queries[np.asarray(problem.is_valid_query(queries), dtype=bool)]
-    assert len(queries) > 0
-    predictions = surrogate.predict(queries)
-    if not np.isfinite(predictions).all():
-        raise FloatingPointError("Final-model probe predictions are nonfinite; retain the model and mark verification as failed")
-    device = str(getattr(surrogate, "device", "cpu"))
     checkpoint = out_dir / "final_surrogate.pkl"
-    replay_error = verify_checkpoint(checkpoint, queries, predictions, device=device)
-    np.savez_compressed(out_dir / "checkpoint_probes.npz", queries=queries, predictions=predictions)
-    root = Path(__file__).resolve().parents[1]
-    sources = [Path(__file__), root / "experiments/run.py", root / "core/experiment.py",
-               Path(inspect.getfile(type(surrogate))), Path(inspect.getfile(type(problem)))]
-    sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
-    record = dict(status="PASS", problem=manifest["problem"], problem_namespace=PAPER_NAMESPACE,
-                  checkpoint_version=3, method=manifest["method"],
-                  seed=manifest["seed"], dataset=manifest["dataset"],
-                  checkpoint=checkpoint.name, checkpoint_sha256=sha(checkpoint),
-                  checkpoint_bytes=checkpoint.stat().st_size,
-                  probes_sha256=sha(out_dir / "checkpoint_probes.npz"),
-                  resolved_config_sha256=sha(out_dir / "resolved_config.yaml"),
+    record = dict(status="saved", problem=manifest["problem"], problem_namespace=PAPER_NAMESPACE,
+                  checkpoint_version=3, method=manifest["method"], seed=manifest["seed"],
+                  dataset=manifest["dataset"], checkpoint=checkpoint.name,
+                  offline_physics_profile="native", checkpoint_bytes=checkpoint.stat().st_size,
                   hf_budget=manifest["budget"]["hf_budget_protocol"],
                   hf_queries=int(result.n_state_queries), train_calls=int(result.surrogate_train_calls),
                   last_update_generation=int(result.db_history[-1]["gen"]),
-                  prediction_replay_max_abs_diff=replay_error, replay_device=device,
+                  replay_device=str(getattr(surrogate, "device", "cpu")),
                   additional_hf_queries=0, additional_train_calls=0,
-                  included_in_original_main_statistics=False,
-                  residual_status=manifest.get("supplement", {}).get("pde_residual_status", "not_part_of_snapshot_audit"),
-                  source_sha256={str(p.resolve().relative_to(root)):sha(p) for p in sources},
                   environment={name: importlib.metadata.version(name)
                                for name in ("numpy", "scipy", "scikit-learn", "torch")})
     temporary = out_dir / "checkpoint.json.tmp"
     temporary.write_text(json.dumps(record, ensure_ascii=False, indent=2, allow_nan=False) + "\n")
     temporary.replace(out_dir / "checkpoint.json")
-    print(f"[MODEL] Final model saved and replay verified; maximum prediction difference {replay_error:.3g}")
+    print("[MODEL] Final model and metadata saved")

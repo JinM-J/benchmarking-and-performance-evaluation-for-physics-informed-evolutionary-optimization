@@ -8,7 +8,6 @@ Paper-protocol outputs under results/main/<problem>/<method>/seed<seed>/:
     history.npz: consumed-HF archive, final population, and snapshot history.
     resolved_config.yaml: complete resolved configuration for this run."""
 import argparse
-import hashlib
 import json
 import sys
 import time
@@ -32,15 +31,6 @@ from optimizers.de import (EPSILON_THETA_FRAC, EPSILON_CONTROL_FRAC,
 ARCHIVE_BEST_SCALAR_VERSION = "archive_best_scalar_v1"
 
 
-def sha256_of(path: str) -> str:
-    """Compute a SHA-256 fingerprint using chunks to support large NPZ files."""
-    h = hashlib.sha256()
-    with open(path, "rb") as fp:
-        for chunk in iter(lambda: fp.read(1 << 22), b""):
-            h.update(chunk)
-    return h.hexdigest()
-
-
 def main():
     ap = argparse.ArgumentParser(description="Run the PDE-constrained optimization benchmark")
     ap.add_argument("--problem", required=True, help="Problem identifier, e.g. f01")
@@ -54,9 +44,9 @@ def main():
     ap.add_argument("--export-surrogate-grid", type=int, default=0,
                     help="Export the final field or central 3D slice; nodes per axis, 0 disables; no additional fitting or HF queries")
     ap.add_argument("--save-final-surrogate", action="store_true",
-                    help="Save final inference state, configuration and replay probes without additional plots")
+                    help="Save final inference state and configuration without additional plots")
     ap.add_argument("--defer-pde-residual", action="store_true",
-                    help="With model saving, defer final PDE residual evaluation to an offline derivative check")
+                    help="With model saving, defer final PDE residual evaluation to an offline derivative evaluation")
     args = ap.parse_args()
     if args.defer_pde_residual and not args.save_final_surrogate:
         ap.error("Deferred residual evaluation requires saving the final surrogate model")
@@ -67,7 +57,6 @@ def main():
     protocol_document = yaml.safe_load(protocol_path.read_text(encoding="utf-8"))
     configuration = {
         "protocol_file": str(protocol_path.relative_to(ROOT)),
-        "protocol_sha256": sha256_of(protocol_path),
         "suite_version": protocol_document.get("suite_version"),
     }
 
@@ -127,10 +116,8 @@ def main():
 
     # Persist schema v1.2: official HF archive and final-population diagnostics.
     if data_path is not None:
-        dataset_sha256 = sha256_of(data_path)
         dataset_file = Path(data_path).name
     else:
-        dataset_sha256 = problem.dataset_fingerprint()
         dataset_file = None
     best_fit = float(np.min(res.fitness)) if len(res.fitness) else float("nan")
     final_mse200 = float(res.db_history[-1]["mse200"]) if res.db_history else float("nan")
@@ -172,7 +159,7 @@ def main():
         "protocol": protocol.name,
         "configuration": configuration,
         "seed": int(args.seed),
-        "dataset": {"file": dataset_file, "sha256": dataset_sha256},
+        "dataset": {"file": dataset_file},
         "budget": {
             "hf_budget_protocol": int(protocol.hf_budget),
             "budget_kind": getattr(protocol, "budget_kind", "state"),
@@ -258,7 +245,6 @@ def main():
         schema_version=SCHEMA_VERSION,
         framework_version=FRAMEWORK_VERSION,
         benchmark_version=BENCHMARK_VERSION,
-        dataset_sha256=dataset_sha256,
         manifest_json=json.dumps(manifest, ensure_ascii=False),
     )
 
@@ -272,7 +258,6 @@ def main():
         "protocol_config": asdict(protocol),
         "seed": args.seed,
         "data_path": str(data_path),
-        "dataset_sha256": dataset_sha256,
         "protocol_params": {
             "pop_size": protocol.pop_size,
             "maxgen": protocol.maxgen,
@@ -313,8 +298,8 @@ def main():
         yaml.safe_dump(resolved, fp, allow_unicode=True, sort_keys=False)
 
     if args.save_final_surrogate:
-        from experiments.surrogate_checkpoint import audit_final_checkpoint
-        audit_final_checkpoint(problem, method.surrogate, out_dir, manifest, res)
+        from experiments.surrogate_checkpoint import write_checkpoint_metadata
+        write_checkpoint_metadata(method.surrogate, out_dir, manifest, res)
 
     if args.export_surrogate_grid:
         from experiments.export_surrogate_field import export_final_field

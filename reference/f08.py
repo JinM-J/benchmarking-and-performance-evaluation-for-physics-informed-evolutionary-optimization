@@ -4,7 +4,6 @@ The value 3/4 is the algebraic minimum with the exact equality u=x^2.
 The experiment uses |u-x^2| <= 1e-3; this check does not certify the optimum
 within that tolerance band or establish PDE reachability without field data."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -25,8 +24,6 @@ def main():
         parser.error("Output exists; choose a different file.")
     result = verify("f08", args.data_dir)
     result["constraint_semantics"] = "The reference value 3/4 uses exact u=x^2; the experiment permits |u-x^2| <= 1e-3. No tolerance-band optimum is certified."
-    result["script_sha256"] = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
-    result["helper_sha256"] = hashlib.sha256((ROOT / "reference/common/candidates.py").read_bytes()).hexdigest()
     payload = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

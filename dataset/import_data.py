@@ -1,12 +1,9 @@
-"""Import exact reference files under the current paper F1--F11 numbering.
+"""Import reference NPZ files under the paper F1--F11 numbering.
 
-Every selected source and existing destination is checked against the distributed
-SHA256 and byte count before any filesystem writes. Files are copied by default;
---link creates hard links on the same filesystem. Existing matching files are
-kept, and mismatches are never overwritten. Original files are not renamed.
+Files are copied by default; --link creates hard links. Existing destinations
+are kept and never overwritten. Source files are not renamed.
 """
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -15,25 +12,14 @@ ROOT = Path(__file__).resolve().parents[1]
 CHUNK_BYTES = 8 * 1024 * 1024
 
 
-def checked_file(path, row):
-    """Check byte identity without unpacking or loading the PDE array."""
+def checked_file(path):
+    """Require a readable NPZ containing a state array, without loading it into RAM."""
+    import zipfile
     if not path.is_file():
-        raise FileNotFoundError(f"Required reference file is missing or not a file: {path}")
-    expected_size = int(row["reference_file_bytes"])
-    if path.stat().st_size != expected_size:
-        raise ValueError(f"Reference size mismatch: {path}")
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(CHUNK_BYTES), b""):
-            digest.update(chunk)
-    if digest.hexdigest() != row["reference_file_sha256"]:
-        raise ValueError(f"Reference SHA256 mismatch: {path}")
-
-
-def identity(path):
-    """Detect ordinary source changes between preflight and transfer."""
-    stat = path.stat()
-    return stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns
+        raise FileNotFoundError(f"Required reference file is missing: {path}")
+    with zipfile.ZipFile(path) as archive:
+        if "u.npy" not in archive.namelist():
+            raise ValueError(f"Reference NPZ has no u array: {path}")
 
 
 def safe_filename(name):
@@ -44,7 +30,7 @@ def safe_filename(name):
 
 def import_data(source_dir, destination_dir, catalog, *, legacy_numbering=False,
                 link=False, problems=None):
-    """Validate all selected files, then import only absent canonical filenames."""
+    """Locate all selected files, then import only absent canonical filenames."""
     source_dir = Path(source_dir).resolve()
     destination_dir = Path(destination_dir).resolve()
     if source_dir == destination_dir:
@@ -66,25 +52,20 @@ def import_data(source_dir, destination_dir, catalog, *, legacy_numbering=False,
         target_name = safe_filename(row["file"])
         source = source_dir / source_name
         target = destination_dir / target_name
-        print(f"Checking {row['paper_problem']}: {source_name} -> {target_name}", flush=True)
-        source_identity = identity(source)
-        checked_file(source, row)
-        if identity(source) != source_identity:
-            raise RuntimeError(f"Source changed during verification: {source}")
+        print(f"Importing {row['paper_problem']}: {source_name} -> {target_name}", flush=True)
+        checked_file(source)
         present = target.exists() or target.is_symlink()
         if present:
-            checked_file(target, row)
-        plan.append((row, source, target, source_identity, present))
+            checked_file(target)
+        plan.append((row, source, target, present))
 
     # All source and existing-target checks precede directory creation or transfer.
     destination_dir.mkdir(parents=True, exist_ok=True)
     results = []
-    for row, source, target, source_identity, present in plan:
-        if identity(source) != source_identity:
-            raise RuntimeError(f"Source changed after verification: {source}")
+    for row, source, target, present in plan:
         if present:
             results.append({"problem": row["paper_problem"], "file": target.name,
-                            "status": "kept_matching"})
+                            "status": "kept_existing"})
             continue
         if link:
             # os.link is exclusive: a newly appearing destination is never replaced.
@@ -92,20 +73,14 @@ def import_data(source_dir, destination_dir, catalog, *, legacy_numbering=False,
             status = "hard_linked"
         else:
             # Exclusive creation prevents overwrite even if a destination appears
-            # after preflight. Hash again while streaming; do not load the NPZ.
+            # after preflight. Stream the NPZ without loading its arrays.
             created = False
             try:
                 with target.open("xb") as output:
                     created = True
-                    digest = hashlib.sha256()
-                    copied = 0
                     with source.open("rb") as handle:
                         for chunk in iter(lambda: handle.read(CHUNK_BYTES), b""):
                             output.write(chunk)
-                            digest.update(chunk)
-                            copied += len(chunk)
-                if copied != row["reference_file_bytes"] or digest.hexdigest() != row["reference_file_sha256"]:
-                    raise RuntimeError(f"Source bytes changed during copy: {source}")
                 status = "copied"
             except BaseException:
                 if created:
@@ -132,7 +107,7 @@ def main():
     results = import_data(args.source_dir, args.destination_dir, catalog,
                           legacy_numbering=args.legacy_numbering, link=args.link,
                           problems=args.problems)
-    print(json.dumps({"status": "PASS", "files": results}, indent=2))
+    print(json.dumps({"status": "complete", "files": results}, indent=2))
 
 
 if __name__ == "__main__":

@@ -1,6 +1,5 @@
 """Finite-difference PDE residuals on a shared physical grid using frozen predictions."""
 from collections import Counter
-import hashlib
 import numpy as np
 import torch
 
@@ -97,8 +96,7 @@ def pde_metrics(problem,model,n):
           torch.as_tensor(ut[:,None],dtype=torch.float64),
           {key:torch.as_tensor(v[:,None],dtype=torch.float64) for key,v in dt.items()})
     residual=np.asarray(residual.detach().cpu(),dtype=float).reshape(-1)
-    metrics=dict(pde_rmse=rmse(residual),pde_points=len(qt),grid_size=n,
-                 test_points_sha256=hashlib.sha256(qt.tobytes()).hexdigest())
+    metrics=dict(pde_rmse=rmse(residual),pde_points=len(qt),grid_size=n)
     if qt.shape[1]==3:
         metrics['parameter_slices']=[dict(parameter=float(value),n=int((qt[:,2]==value).sum()),
              rmse=rmse(residual[qt[:,2]==value])) for value in np.unique(qt[:,2])]
@@ -123,9 +121,45 @@ def condition_points(problem,region,n):
     return q
 
 
+def higher_condition_value(problem, model, q, derivative, n):
+    """Second-order stencils for repeated second/third boundary derivatives."""
+    order = len(derivative)
+    if len(set(derivative)) != 1 or order not in (2, 3):
+        raise NotImplementedError(f'Unsupported condition derivative: {derivative}')
+    if n < order + 2:
+        raise ValueError('Condition grid is too small for the boundary stencil')
+    axis = problem.physics.coordinate_names.index(derivative[0])
+    lo, hi = problem.query_bounds[axis]
+    h = (hi - lo) / n
+    if order == 2:
+        radius, centered = 1, ((-1, 0, 1), (1., -2., 1.))
+        forward = ((0, 1, 2, 3), (2., -5., 4., -1.))
+    else:
+        radius, centered = 2, ((-2, -1, 0, 1, 2), (-.5, 1., 0., -1., .5))
+        forward = ((0, 1, 2, 3, 4), (-2.5, 9., -12., 7., -1.5))
+    left = q[:, axis] - radius * h < lo
+    right = q[:, axis] + radius * h > hi
+    middle = ~(left | right)
+    backward = (tuple(-shift for shift in forward[0]),
+                tuple((-1)**order * weight for weight in forward[1]))
+    out = np.empty(len(q))
+    for mask, (offsets, weights) in ((left, forward), (right, backward), (middle, centered)):
+        if not mask.any():
+            continue
+        value = np.zeros(mask.sum())
+        for shift, weight in zip(offsets, weights):
+            points = q[mask].copy()
+            points[:, axis] += shift * h
+            if (points[:, axis] < lo - 1e-12).any() or (points[:, axis] > hi + 1e-12).any():
+                raise ValueError('Derivative stencil exceeds domain bounds')
+            value += weight * predict_finite(model, points)
+        out[mask] = value / h**order
+    return out
+
+
 def condition_value(problem,model,q,derivative,n):
     if not derivative:return predict_finite(model,q)
-    if len(derivative)!=1:raise NotImplementedError('Only first derivatives are supported for initial and boundary conditions')
+    if len(derivative)!=1:return higher_condition_value(problem,model,q,derivative,n)
     axis=problem.physics.coordinate_names.index(derivative[0]);lo,hi=problem.query_bounds[axis]
     h=(hi-lo)/n
     # Use centered interior and second-order one-sided boundary differences.
@@ -146,8 +180,7 @@ def condition_metrics(problem,model,n):
     components=[];groups={}
     def add(name,group,q,error):
         error=np.asarray(error).reshape(-1)
-        components.append(dict(name=name,quantity=group,points=len(q),rmse=rmse(error),
-                          test_points_sha256=hashlib.sha256(q.tobytes()).hexdigest()))
+        components.append(dict(name=name,quantity=group,points=len(q),rmse=rmse(error)))
         groups.setdefault(group,[]).append(error)
     for i,condition in enumerate(problem.physics.initial_conditions()):
         q=condition_points(problem,condition.region,n)
@@ -164,7 +197,8 @@ def condition_metrics(problem,model,n):
             assert qa.shape==qb.shape
             different=np.any(np.abs(qa-qb)>1e-10,axis=0)
             assert different.sum()==1,'Free coordinates on periodic boundaries are not paired pointwise'
-            add(f'bc_{i}_value','bc_u',qa,predict_finite(model,qa)-predict_finite(model,qb))
+            if getattr(condition,'include_value',True):
+                add(f'bc_{i}_value','bc_u',qa,predict_finite(model,qa)-predict_finite(model,qb))
             if condition.kind=='periodic_derivative':
                 group='bc_d'+''.join(condition.derivative)
                 add(f'bc_{i}_derivative',group,qa,condition_value(problem,model,qa,condition.derivative,n)-condition_value(problem,model,qb,condition.derivative,n))

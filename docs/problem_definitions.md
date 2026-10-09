@@ -571,7 +571,7 @@ $$
 
 Equality requires $\cos x_1=-1$ and $S=0$. Within $x_1\in[0,5]$, this reduces to $x_1=\pi$ and $u=2.275$. Whether the bound is attained by a given reference field is a separate state-reachability question.
 
-The [reference script](../reference/f07.py) searches all adjacent stored $x_2$ intervals at fixed $x_1=\pi$, brackets roots of $u(\pi,x_2)-2.275$, and refines them with Brent's method (`xtol=rtol=1e-14`). Each root is checked through the official objective and a separate four-corner bilinear calculation using finite raw grid values. The script also checks decision bounds and distances to the hole walls, and records the dataset hash. Acceptance thresholds include state-target error $10^{-10}$ and objective-bound error $10^{-12}$.
+The [reference script](../reference/f07.py) searches all adjacent stored $x_2$ intervals at fixed $x_1=\pi$, brackets roots of $u(\pi,x_2)-2.275$, and refines them with Brent's method (`xtol=rtol=1e-14`). Each root is checked through the official objective and a separate four-corner bilinear calculation using finite raw grid values. The script also checks decision bounds and distances to the hole walls. Acceptance thresholds include state-target error $10^{-10}$ and objective-bound error $10^{-12}$.
 
 The [reference record](../reference/targets/f07.json) lists example attaining coordinates $x_2\approx0.3228708579082189$, $0.43010330311570477$, $0.8080834400236521$, and $0.9443702485297355$. Rerun the verifier on the supplied field to establish which points attain the lower bound for that discretization. Agreement on an interpolated numerical field does not establish the accuracy of the continuous Poisson solution or certify all displayed decimal places of its attaining coordinates.
 
@@ -756,7 +756,7 @@ The attainment procedure scans 1001 parameter values, refines sign-changing brac
 
 [The generator](../dataset/generate_f09.py) uses reaction half-steps and FFT diffusion on 500 spatial points, 2001 time points, and 1000 parameter values. The spatial endpoint is excluded, $\Delta x=0.008$, and $\Delta t=0.001$. Coordinates and the stored state array are float32, with layout `(x, t, mu)`. Reaction half-steps use explicit Euler; the splitting label alone is not an order-of-accuracy guarantee.
 
-The field is loaded from `dataset/f09.npz`. See [data acquisition and validation](../dataset/README.md) and [reference hashes and array metadata](../dataset/reference_manifest.json). Precomputed fields are distributed separately from the source repository.
+The field is loaded from `dataset/f09.npz`. See [data acquisition and validation](../dataset/README.md) and [reference array metadata](../dataset/reference_manifest.json). Precomputed fields are distributed separately from the source repository.
 
 ## F10
 
@@ -862,7 +862,7 @@ Coordinates are rounded for display. [The target record](../reference/targets/f1
 python reference/f10.py --data-dir dataset --output f10_reference.json
 ```
 
-The procedure verifies the data hash, scans 1001 parameter values, refines sign-changing brackets with Brent's method, and searches 2001 spatial points at $t=0$ before state-root refinement. Independent eight-corner interpolation and an explicit centered-difference quadrature check validate the computed state and integral. Output records include full-precision decisions, target errors, constraint violation, and rounded experiment evaluations.
+The procedure scans 1001 parameter values, refines sign-changing brackets with Brent's method, and searches 2001 spatial points at $t=0$ before state-root refinement. Independent eight-corner interpolation and an explicit centered-difference quadrature check validate the computed state and integral. Output records include full-precision decisions, target errors, constraint violation, and rounded experiment evaluations.
 
 The zero lower bound is exact for the algebraic objective. Numerical attainment is established for the deposited interpolant and discrete quadrature, not by a continuous-PDE error certificate. The supplementary material reports a float64 objective of approximately $4.96\times10^{-30}$ for its stored-field verification.
 
@@ -870,7 +870,7 @@ The zero lower bound is exact for the algebraic objective. Numerical attainment 
 
 [The generator](../dataset/generate_f10.py) combines a Rusanov advection flux with a two-stage Runge-Kutta update and sine-transform diffusion. It uses 1000 spatial points, 4001 internal time levels, and 1000 viscosities logarithmically spaced from $1$ to $10^{-3}$. The internal time step is $0.00025$; every second level is stored, giving 2001 stored times. Spatial endpoints are included, with $\Delta x=2/999$.
 
-The float32 state has layout `(x, t, lognu)` and is loaded from `dataset/f10.npz`. See [data acquisition and validation](../dataset/README.md) and [reference hashes and array metadata](../dataset/reference_manifest.json). Precomputed fields are distributed separately from the source repository.
+The float32 state has layout `(x, t, lognu)` and is loaded from `dataset/f10.npz`. See [data acquisition and validation](../dataset/README.md) and [reference array metadata](../dataset/reference_manifest.json). Precomputed fields are distributed separately from the source repository.
 
 ## F11
 
@@ -958,7 +958,7 @@ python reference/f11.py --data-dir dataset --output f11_reference.json
 python reference/f11.py --continuous --output f11_continuous.json
 ```
 
-The discrete check verifies the data hash, scans 1001 parameter values, refines brackets with Brent's method, and matches the target state at $t=0$ using a 2001-point spatial scan and root refinement. Independent eight-corner interpolation and explicit quadrature verify the result. Reports retain full-precision decisions and both float64 and rounded experiment evaluations. The supplementary material reports a float64 objective of approximately $4.00\times10^{-15}$ for this discrete verification.
+The discrete check scans 1001 parameter values, refines brackets with Brent's method, and matches the target state at $t=0$ using a 2001-point spatial scan and root refinement. Independent eight-corner interpolation and explicit quadrature verify the result. Reports retain full-precision decisions and both float64 and rounded experiment evaluations. The supplementary material reports a float64 objective of approximately $4.00\times10^{-15}$ for this discrete verification.
 
 #### Continuous solution and integral
 
@@ -993,4 +993,4 @@ Consequently, $J=0.5$ is unreachable for the exact continuous integral. The cont
 
 [The generator](../dataset/generate_f11.py) uses source half-steps and FFT diffusion, with 500 spatial points, 2001 time points, and 1000 parameter values. Spatial points exclude the right endpoint, $\Delta x=0.008$, and $\Delta t=0.001$. Both source half-steps use the source at the old time; the splitting label alone does not establish second-order temporal accuracy.
 
-The state and coordinate arrays are float32, with layout `(x, t, mu)`, and are loaded from `dataset/f11.npz`. See [data acquisition and validation](../dataset/README.md) and [reference hashes and array metadata](../dataset/reference_manifest.json). Precomputed fields are distributed separately from the source repository.
+The state and coordinate arrays are float32, with layout `(x, t, mu)`, and are loaded from `dataset/f11.npz`. See [data acquisition and validation](../dataset/README.md) and [reference array metadata](../dataset/reference_manifest.json). Precomputed fields are distributed separately from the source repository.

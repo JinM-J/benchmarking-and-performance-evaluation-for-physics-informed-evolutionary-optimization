@@ -2,8 +2,7 @@
 
 Paper problems F1–F11 use `f01.npz`–`f11.npz`. Their generators are
 `generate_f01.py`–`generate_f11.py`. Precomputed arrays are distributed separately;
-[reference_manifest.json](reference_manifest.json) records their SHA256, size,
-shape, and dtype.
+[reference_manifest.json](reference_manifest.json) records their size, shape, and dtype.
 
 ## Import and check
 
@@ -11,15 +10,14 @@ Run from the repository root:
 
 ```bash
 python dataset/import_data.py --source-dir /path/to/reference-download
-python dataset/check_data.py --sha256
+python dataset/check_data.py
 ```
 
 Input names are `f01.npz`–`f11.npz`. Use `--problems F6 F7`, for example,
 to import a subset of the reference fields.
 
-The importer validates every selected input and existing destination before
-writing. It keeps matching destinations and rejects mismatches or an identical
-source/destination directory. Files are copied to this directory by default;
+The importer locates the selected NPZ files and checks for the state array.
+Existing destinations are kept. Files are copied to this directory by default;
 `--destination-dir` selects another location. Optional `--link` creates hard links
 on the same filesystem: both paths share data and must be treated as immutable.
 Imports preserve the source file bytes and leave the source files intact.
@@ -35,8 +33,6 @@ python dataset/check_data.py --problems f06
 
 Generators refuse existing outputs unless `--overwrite` is given. For an
 installation check, use the small [F6 demonstration](../examples/demo_f06.py).
-A regenerated file need not match the archived byte hash because ZIP metadata,
-compression, and numerical libraries can differ.
 
 | Problem | Stored u shape | dtype | Construction |
 | --- | --- | --- | --- |

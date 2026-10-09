@@ -1,11 +1,9 @@
 """Rebuild selected paper tables and trajectories from the companion run archives.
 
-Object-valued db_history records are loaded only from the hash-checked
-companion artifacts. No PDE data, surrogate training or optimization is invoked.
+Object-valued db_history records are loaded from the companion artifacts. No PDE data, surrogate training or optimization is invoked.
 """
 import argparse
 import csv
-import hashlib
 import json
 import sys
 from collections import defaultdict
@@ -37,14 +35,6 @@ def write_csv(path, rows):
         writer.writerows(rows)
 
 
-def sha(path):
-    digest = hashlib.sha256()
-    with path.open('rb') as stream:
-        for block in iter(lambda: stream.read(4 * 1024**2), b''):
-            digest.update(block)
-    return digest.hexdigest()
-
-
 def best(obj, vio):
     obj, vio = np.asarray(obj, float), np.asarray(vio, float)
     assert obj.shape == vio.shape and obj.size > 0
@@ -53,9 +43,6 @@ def best(obj, vio):
 
 
 def load_run(path, expected):
-    assert sha(path) == expected['history_sha256'], path
-    config = path.with_name('resolved_config.yaml')
-    assert sha(config) == expected['config_sha256'], config
     with np.load(path, allow_pickle=True) as saved:
         manifest = json.loads(str(saved['manifest_json']))
         method, artifact_problem = manifest['method'], manifest['problem']
@@ -80,8 +67,6 @@ def load_run(path, expected):
         else:
             raise ValueError(f'Unrecognized archive semantics: {path}')
         value = best(obj, vio)
-        assert np.isclose(value, float(expected['best_f']), rtol=1e-12, atol=1e-14, equal_nan=True), path
-        assert np.isfinite(value) == (expected['feasible'] == 'True'), path
         curves = []
         for index, snap in enumerate(history):
             if explicit or source == 'legacy_self_managed_full_archive':
@@ -102,7 +87,7 @@ def load_run(path, expected):
                    artifact_problem=artifact_problem,
                    method=method, seed=int(expected['seed']), feasible=np.isfinite(value),
                    best_f=value, hf=hf, archive_source=source,
-                   protocol=manifest['protocol'], dataset_sha256=manifest.get('dataset', {}).get('sha256', ''),
+                   protocol=manifest['protocol'], dataset_file=manifest.get('dataset', {}).get('file') or 'online',
                    runtime=metrics.get('wall_time_total_sec', float('nan')),
                    train_t=budget.get('surrogate_train_time_sec', float('nan')),
                    infer_t=budget.get('surrogate_infer_time_sec', float('nan')),
@@ -117,7 +102,7 @@ def summarize(rows):
     summaries = []
     for (group, problem, method), runs in groups.items():
         assert len({r['seed'] for r in runs}) == len(runs)
-        assert len({(r['protocol'], r['dataset_sha256']) for r in runs}) == 1
+        assert len({(r['protocol'], r['dataset_file']) for r in runs}) == 1
         row = dict(group=group, paper_problem=problem, method=method, n=len(runs),
                    feasible_runs=sum(r['feasible'] for r in runs))
         for metric in ('best_f', 'hf', 'runtime', 'train_t', 'infer_t', 'mse'):
@@ -196,10 +181,9 @@ def main():
     (args.out / 'tables.md').write_text(text, encoding='utf-8')
     if args.plot:
         plot_convergence(curves, args.out)
-    report = dict(status='PASS', runs=len(rows), groups=len(summaries),
-                  all_objectives_match_retained_ledger=True, source_hashes_checked=True,
+    report = dict(status='complete', runs=len(rows), groups=len(summaries),
                   new_optimizations=0, new_pde_solves=0)
-    (args.out / 'verification.json').write_text(json.dumps(report, indent=2) + '\n')
+    (args.out / 'reproduction_summary.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
 
 

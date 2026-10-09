@@ -27,7 +27,7 @@ def summarize_run(path):
     budget = manifest["budget"]
     return {
         "problem": manifest["problem"], "method": manifest["method"],
-        "protocol": manifest["protocol"], "dataset_sha256": manifest["dataset"]["sha256"],
+        "protocol": manifest["protocol"], "dataset_file": manifest.get("dataset", {}).get("file") or "online",
         "seed": int(manifest["seed"]), "feasible": bool(feasible.any()),
         "best_f": float(obj[feasible].min()) if feasible.any() else float("nan"),
         "hf": budget["n_state_queries"] if budget.get("budget_kind", "state") == "state"
@@ -43,7 +43,7 @@ def aggregate_rows(rows):
     groups = {}
     seen = set()
     for row in rows:
-        key = tuple(row[k] for k in ("problem", "method", "protocol", "dataset_sha256"))
+        key = tuple(row[k] for k in ("problem", "method", "protocol", "dataset_file"))
         run_key = key + (row["seed"],)
         if run_key in seen:
             raise ValueError(f"Duplicate run: {run_key}")
@@ -51,7 +51,7 @@ def aggregate_rows(rows):
         groups.setdefault(key, []).append(row)
     output = []
     for key, runs in sorted(groups.items()):
-        result = dict(zip(("problem", "method", "protocol", "dataset_sha256"), key))
+        result = dict(zip(("problem", "method", "protocol", "dataset_file"), key))
         result.update(n=len(runs), feasible_runs=sum(r["feasible"] for r in runs),
                       feasible_rate=sum(r["feasible"] for r in runs) / len(runs))
         for metric in ("best_f", "hf", "runtime", "train_t", "infer_t", "mse"):

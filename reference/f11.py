@@ -9,7 +9,6 @@ Neither mode generates PDE data or trains a model.
 import argparse
 import ast
 from fractions import Fraction
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -50,9 +49,6 @@ def historical_exact(path):
     exec(compile(module, str(path), "exec"), namespace)
     return namespace["exact"], {
         "filename": path.name,
-        "file_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-        "exact_function_ast_sha256": hashlib.sha256(
-            ast.dump(functions[0], include_attributes=False).encode()).hexdigest(),
         "execution_scope": "Only exact() is evaluated; no experiment driver or dataset access.",
     }
 
@@ -198,10 +194,6 @@ def verify_continuous(historical_source=None):
         },
         "historical_formula_comparison": historical_record,
         "cases": cases,
-        "source_sha256": {
-            "reference/f11.py": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-            "problems/f11.py": hashlib.sha256((ROOT / "problems/f11.py").read_bytes()).hexdigest(),
-        },
         "evidence_limits": [
             "The benchmark defines J by 10x10 quadrature on its stored interpolated field. This discrete integral may attain J=0.5.",
             "This continuous-integral obstruction does not invalidate a separately verified optimum of the official discrete objective.",
@@ -216,7 +208,6 @@ def verify_continuous(historical_source=None):
 def solve(data_dir):
     from reference.common import integral
     result = integral.solve("F11", Path(data_dir))
-    result["solver_sha256"] = hashlib.sha256(Path(integral.__file__).read_bytes()).hexdigest()
     return result
 
 

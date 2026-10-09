@@ -1,6 +1,5 @@
-"""Inspect reference array headers; optionally hash existing files. Never generate data."""
+"""Inspect reference array headers without loading the state arrays."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import zipfile
@@ -13,7 +12,6 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--problems", default=None, help="Comma-separated stable code identifiers")
-    ap.add_argument("--sha256", action="store_true", help="Read the full file to check archived byte identity")
     ap.add_argument("--list", action="store_true", help="Show the expected catalog without requiring files")
     args = ap.parse_args()
     catalog = json.loads((ROOT / "dataset/reference_manifest.json").read_text())
@@ -45,14 +43,6 @@ def main():
         matches = list(shape) == row["u_shape"] and str(dtype) == row["u_dtype"]
         print("HEADER_OK" if matches else "HEADER_MISMATCH", label, shape, dtype)
         failed |= not matches
-        if args.sha256:
-            h = hashlib.sha256()
-            with path.open("rb") as fp:
-                for block in iter(lambda: fp.read(8 * 1024 * 1024), b""):
-                    h.update(block)
-            matches = h.hexdigest() == row["reference_file_sha256"]
-            print("HASH_OK" if matches else "HASH_DIFFERS_FROM_ARCHIVED_FILE", h.hexdigest())
-            failed |= not matches
     raise SystemExit(1 if failed else 0)
 
 

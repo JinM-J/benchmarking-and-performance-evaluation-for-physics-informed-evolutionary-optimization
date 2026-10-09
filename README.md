@@ -87,7 +87,7 @@ Large reference fields and archived experiment outputs are supplied separately
 from this source repository. Import and validate the reference fields using
 [the data instructions](dataset/README.md) before running paper experiments.
 The [data manifest](dataset/reference_manifest.json) records the required files,
-sizes, shapes and checksums.
+sizes, shapes and dtypes.
 
 ```bash
 python experiments/run.py --problem f01 --method gp_de --protocol paper --seed 450
@@ -98,8 +98,7 @@ python experiments/aggregate.py
 The batch command previews the default 30-run paper schedule; remove
 `--dry-run` to execute it. Single runs, the main batch and aggregation share
 `results/main/` by default. Use `--problems` to select a subset of problems.
-Each output records the complete configuration, protocol checksum and actual
-HF counts.
+Each output records the complete configuration and actual HF counts.
 
 ### Reconstruct archived results
 

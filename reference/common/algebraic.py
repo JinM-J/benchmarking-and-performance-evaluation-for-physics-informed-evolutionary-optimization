@@ -1,6 +1,5 @@
 """Record and write single-problem algebraic refinement results."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import platform
@@ -29,7 +28,6 @@ def record(code, value, coordinates, residuals, initial, tolerance):
         "matches_archived_value_and_equations": bool(passed),
         "pde_reachability_checked": False, "global_optimality_certified": False,
         "reference_source": str(source.relative_to(ROOT)),
-        "archive_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
     }
 
 
@@ -45,8 +43,6 @@ def run_cli(solve, script, description):
     result.update(
         scope="Algebraic root refinement; no PDE solve or global optimality certificate.",
         command=sys.argv, python=platform.python_version(), mpmath=mp.__version__,
-        script_sha256=hashlib.sha256(Path(script).read_bytes()).hexdigest(),
-        helper_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         status="PASS" if passed else "FAIL", passed=passed)
     payload = json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n"
     if args.output:

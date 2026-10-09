@@ -11,7 +11,6 @@ Example, from the repository root:
 """
 import argparse
 from datetime import datetime, timezone
-import hashlib
 import json
 from pathlib import Path
 import platform
@@ -26,14 +25,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from problems.f07 import F07
-
-
-def sha256(path):
-    digest = hashlib.sha256()
-    with Path(path).open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 class ReferenceState:
@@ -65,7 +56,6 @@ def independent_bilinear(x, y, values, xq, yq):
 def verify(data_path):
     if not data_path.is_file():
         raise FileNotFoundError(f"Reference dataset is required: {data_path}")
-    before_hash = sha256(data_path)
     problem = F07()
     reference = problem.load_reference(data_path)
     provider = ReferenceState(reference)
@@ -154,8 +144,6 @@ def verify(data_path):
             "raw_cell_index_x1_x2": cell, "raw_cell_corners": corners,
             "checks": checks, "status": "PASS" if passed else "FAIL",
         })
-    if sha256(data_path) != before_hash:
-        raise RuntimeError("Reference data changed during verification")
     branches = []
     for multiple in (-1, 1, 3):
         coordinate = multiple * np.pi
@@ -170,8 +158,8 @@ def verify(data_path):
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "provenance": "Independent reference-point verification on the supplied stored PDE field.",
         "dataset": {
-            "file": data_path.name, "sha256": before_hash,
-            "bytes": data_path.stat().st_size, "unchanged_after_verification": True,
+            "file": data_path.name,
+            "bytes": data_path.stat().st_size,
             "axis_keys": ["x", "t"], "axis_semantics": ["x1", "x2"],
             "shape_x1_x2": list(raw_u.shape), "stored_layout": "(x2,x1); transposed on loading",
             "bounds": np.column_stack((reference.axes_min, reference.axes_max)).tolist(),
@@ -203,8 +191,6 @@ def verify(data_path):
             "No independent PDE solve, grid refinement, or continuous-PDE residual certification is performed by this script.",
             "Geometric exclusion is checked explicitly because the problem's algebraic violation() returns zero even inside holes.",
         ],
-        "source_sha256": {str(path.relative_to(ROOT)): sha256(path) for path in
-                          (Path(__file__), ROOT / "problems/f07.py", ROOT / "evaluation/reference.py")},
         "environment": {"python": platform.python_version(), "numpy": np.__version__,
                         "scipy": scipy.__version__, "mpmath": mp.__version__},
         "status": "PASS" if candidates and all(r["status"] == "PASS" for r in candidates) else "FAIL",

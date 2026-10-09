@@ -1,6 +1,5 @@
 """F10 reference optimum on the stored PDE field and discrete quadrature."""
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -12,7 +11,6 @@ from reference.common import integral
 
 def solve(data_dir):
     result = integral.solve("F10", Path(data_dir))
-    result["solver_sha256"] = hashlib.sha256(Path(integral.__file__).read_bytes()).hexdigest()
     return result
 
 
