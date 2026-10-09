@@ -220,9 +220,8 @@ The stored grids give the dimensions of the archived state arrays.
 | F10 | Rusanov flux/RK2 and sine-transform diffusion | 1000 × 2001 × 1000 |
 | F11 | Split source steps and FFT diffusion | 500 × 2001 × 1000 |
 
-For F7, both grid axes are spatial. For F9–F11, the third axis indexes the
-parameter values. Stored time grids may be subsampled from the internal solver
-grids. The corresponding implementations are
+Stored time grids may be subsampled from the internal solver grids.
+The corresponding implementations are
 [`dataset/generate_f01.py`](dataset/generate_f01.py) through
 [`dataset/generate_f11.py`](dataset/generate_f11.py).
 
