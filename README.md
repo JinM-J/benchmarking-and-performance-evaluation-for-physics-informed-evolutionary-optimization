@@ -1,40 +1,45 @@
 # Benchmarking and Performance Evaluation for Physics-Informed Evolutionary Optimization
 
-This repository provides a benchmark suite for studying **surrogate-assisted
-optimization with PDE-dependent objectives and constraints**. It contains eleven
-test problems, F1–F11, together with multiple surrogate models, optimizers,
+This repository provides a benchmark test suite for **physics-informed
+evolutionary optimization of expensive constrained optimization problems (ECOPs)
+with PDE-based constraints**. It contains eleven benchmark test functions,
+F1–F11, together with multiple surrogate models, optimizers,
 constraint-handling strategies, reference-solution calculations and experiment
 reproduction scripts.
 
-Physics is incorporated into surrogate modeling to support evolutionary search.
+Physics is primarily incorporated through surrogate modeling to support
+evolutionary optimization.
 The problems combine PDE states with algebraic objectives and constraints,
-covering different dynamics, landscapes, state–decision couplings and feasible
-regions.
+covering PDE dynamics, algebraic landscape characteristics, state–decision
+coupling and feasible region geometry.
 
 [Test suite](#test-suite-f1f11) · [Quick start](#quick-start) ·
 [Experiment configuration](#experiment-configuration) ·
-[Evaluation](#models-optimizers-and-evaluation) ·
+[Evaluation](#performance-evaluation-and-comparison) ·
 [Reference solvers](#reference-pde-solvers-and-stored-grids) ·
 [Documentation](#documentation)
 
-![Illustration of feasible-region geometry under different constraints](docs/figures/feasible_region_geometry.png)
+![Illustration of feasible region geometry under different constraints](docs/figures/feasible_region_geometry.png)
 
 *Manuscript illustration of a PDE state surface combined with different algebraic
 and geometric constraints.*
 
-## Benchmark design
+## Benchmark test suite design
 
-The test suite controls four sources of optimization difficulty in expensive
-constrained optimization problems (ECOPs) with PDE-based constraints:
+The benchmark test functions are characterized along four complementary axes,
+representing sources of complexity arising from PDE-based constraints,
+algebraic objective landscapes and their interactions:
 
-- **Type of PDE dynamics:** diffusion, reaction–diffusion, convection–diffusion,
-  wave propagation, elliptic equilibrium, and high-order nonlinear dissipation.
-- **Type of algebraic functions:** quadratic, fractional oscillatory, Rastrigin,
+- **Type of PDE Dynamics:** diffusion-dominated, reaction–diffusion,
+  convection–diffusion, wave-propagation, elliptic-equilibrium, and high-order
+  nonlinear dissipative systems.
+- **Type of Algebraic Functions:** quadratic, fractional oscillatory, Rastrigin,
   six-hump camel, Branin, Goldstein–Price, Rosenbrock, and Ackley landscapes.
-- **State–decision coupling mode:** fixed PDE fields in F1–F8 and parameter-dependent
-  fields with integral objectives in F9–F11.
-- **Feasible-region geometry:** no additional algebraic constraints, inequalities,
-  equality manifolds, and geometric restrictions.
+- **State-Decision Coupling Mode:** fixed PDE solution fields in F1–F8 and
+  parameter-dependent solution fields with integral-type objectives in F9–F11.
+- **Feasible Region Geometry:** no additional algebraic constraints, inequality
+  constraints, low-dimensional manifolds induced by equality constraints, and
+  disconnected or highly complex feasible domains.
 
 The [benchmark design document](docs/benchmark_design.md) gives the unified
 mathematical formulation and the manuscript's detailed explanation of these axes.
@@ -143,21 +148,27 @@ steps, loss weights and learning rates, are specified per problem in
 main, optimizer, constraint, residual and illustration schedules. Residual and
 illustration runs are separate from the 30-run main statistics.
 
-## Models, optimizers and evaluation
+## Performance evaluation and comparison
 
-The suite includes data-driven and physics-informed surrogate models, multiple
-optimizers and several constraint-handling strategies. These components share
-problem interfaces and configurable sampling budgets. Model definitions,
-method identifiers and literature attributions are provided in
+The main comparison includes three data-driven surrogate models—Gaussian process
+(GP), radial basis function network (RBFN) and multilayer perceptron (MLP)—and
+three physics-informed surrogate models—physics-informed Gaussian process
+(PIGP), physics-informed neural network (PINN) and physics-informed neural
+operator (PINO). Two additional surrogate-assisted evolutionary algorithms
+(SAEAs), GLoSADE and SaDE-SA-GRM, broaden the comparison. Optimizer and
+constraint-handling comparisons are also provided.
+Model definitions, method identifiers and literature attributions are given in
 [the method documentation](methods/README.md).
 
-Evaluation separates three questions:
+A multidimensional evaluation protocol separately assesses surrogate modeling
+accuracy and optimization accuracy. The reported measures address three
+questions:
 
-1. **Optimization quality:** what is the best feasible true objective among the
+1. **Optimization accuracy:** what is the best feasible true objective among the
    points for which the algorithm actually obtained reference information?
-2. **Feasibility and repeatability:** how often are feasible solutions found,
-   and how do objective values vary across independent runs?
-3. **State approximation and physics:** how accurately does the surrogate
+2. **Constraint satisfaction and repeatability:** how often are feasible
+   solutions found, and how do objective values vary across independent runs?
+3. **Surrogate modeling accuracy:** how accurately does the surrogate
    approximate the field, and what PDE and initial/boundary-condition residuals
    does it produce on specified evaluation points?
 
