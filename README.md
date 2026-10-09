@@ -48,17 +48,17 @@ mathematical formulation and the manuscript's detailed explanation of these axes
 
 | Problem | PDE model | Decision variables | Objective / constraints |
 | --- | --- | --- | --- |
-| [F1](docs/problem_definitions.md#f1) | Viscous Burgers | `(x, t)` | Sinusoidal fractional objective; two inequalities |
-| [F2](docs/problem_definitions.md#f2) | Wave | `(x, t, z)` | Quadratic objective; two equality tolerance bands |
-| [F3](docs/problem_definitions.md#f3) | Allen–Cahn-type reaction–diffusion | `(x, t)` | Rastrigin-type objective |
-| [F4](docs/problem_definitions.md#f4) | Forced heat | `(x, t)` | Six-hump camel objective |
-| [F5](docs/problem_definitions.md#f5) | Forced heat | `(x, t)` | Linear objective in transformed coordinates; polynomial inequalities |
-| [F6](docs/problem_definitions.md#f6) | Convection–diffusion, manufactured solution | `(x, t)` | Right-side 5% response objective |
-| [F7](docs/problem_definitions.md#f7) | Steady Poisson | `(x1, x2)` | Branin-type objective; perforated spatial domain |
-| [F8](docs/problem_definitions.md#f8) | Kuramoto–Sivashinsky | `(x, t)` | Quadratic objective; equality tolerance band |
-| [F9](docs/problem_definitions.md#f9) | Parametric reaction–diffusion | `(x, t, mu)` | Goldstein–Price-type objective with local state and state integral |
-| [F10](docs/problem_definitions.md#f10) | Parametric Burgers | `(x, t, lognu)` | Shifted Rosenbrock objective with state and dissipation |
-| [F11](docs/problem_definitions.md#f11) | Parametric forced heat | `(x, t, mu)` | Ackley-type objective with state and input work |
+| [F1](docs/problem_definitions.md#f1) | Viscous Burgers | $(x, t)$ | Sinusoidal fractional objective; two inequalities |
+| [F2](docs/problem_definitions.md#f2) | Wave | $(x_1, x_2, t)$ | Quadratic objective; two equality tolerance bands |
+| [F3](docs/problem_definitions.md#f3) | Allen–Cahn-type reaction–diffusion | $(x_1, t)$ | Rastrigin-type objective |
+| [F4](docs/problem_definitions.md#f4) | Forced heat | $(x, t)$ | Six-hump camel objective |
+| [F5](docs/problem_definitions.md#f5) | Forced heat | $(x_1, t)$ | Linear objective in transformed coordinates; polynomial inequalities |
+| [F6](docs/problem_definitions.md#f6) | Convection–diffusion, manufactured solution | $(x, t)$ | Right-side 5% response objective |
+| [F7](docs/problem_definitions.md#f7) | Steady Poisson | $(x_1, x_2)$ | Branin-type objective; perforated spatial domain |
+| [F8](docs/problem_definitions.md#f8) | Kuramoto–Sivashinsky | $(x_1, t)$ | Quadratic objective; equality tolerance band |
+| [F9](docs/problem_definitions.md#f9) | Parametric reaction–diffusion | $(x, t, \eta)$ | Goldstein–Price-type objective with local state and state integral |
+| [F10](docs/problem_definitions.md#f10) | Parametric Burgers | $(x_1, t, \ln\eta)$ | Shifted Rosenbrock objective with state and dissipation |
+| [F11](docs/problem_definitions.md#f11) | Parametric forced heat | $(x_1, t, \eta)$ | Ackley-type objective with state and input work |
 
 The [full problem definitions](docs/problem_definitions.md) give all objectives,
 PDEs, initial/boundary conditions, constraints and reference-solution calculations.
