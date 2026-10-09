@@ -14,24 +14,15 @@ python dataset/import_data.py --source-dir /path/to/reference-download
 python dataset/check_data.py --sha256
 ```
 
-To read the original archive filenames, select `--legacy-numbering` explicitly:
-
-```bash
-python dataset/import_data.py --source-dir /path/to/original-dataset \
-  --legacy-numbering --problems F6 F7
-```
-
-The manifest's `legacy_file` maps original files to current paper problems:
-old `bench1_data.npz`–`bench5_data.npz` correspond to F1–F5,
-`bench12_data.npz` to F6, and old `bench6_data.npz`–`bench10_data.npz` to F7–F11.
-Numbering is never guessed. The default input names are `f01.npz`–`f11.npz`.
+Input names are `f01.npz`–`f11.npz`. Use `--problems F6 F7`, for example,
+to import a subset of the reference fields.
 
 The importer validates every selected input and existing destination before
 writing. It keeps matching destinations and rejects mismatches or an identical
 source/destination directory. Files are copied to this directory by default;
 `--destination-dir` selects another location. Optional `--link` creates hard links
 on the same filesystem: both paths share data and must be treated as immutable.
-Imports preserve the original file bytes; they do not rename or alter originals.
+Imports preserve the source file bytes and leave the source files intact.
 
 ## Generate a field
 
@@ -64,8 +55,8 @@ compression, and numerical libraries can differ.
 Plan for peak working memory, not compressed file size: F4's u alone is about
 6.15 GB. Reference loading promotes parametric fields to float64, and sorting
 F10's parameter axis can require another copy. Generation also uses temporary
-grids. The `Strang` labels in original metadata do not establish global
-second-order accuracy: reaction half-steps use Euler and source half-steps reuse
+grids. The metadata label `Strang` does not establish global second-order
+accuracy: reaction half-steps use Euler and source half-steps reuse
 the old-time source.
 
 ## Array conventions
@@ -73,11 +64,11 @@ the old-time source.
 - Two-dimensional fields store `x`, `t`, and `u`. F7 uses `t` for its second
   spatial coordinate and stores u in transposed spatial order.
 - F6 also stores `meta_json` with its coefficients and packet definition.
-- Parametric fields add `mu` or `lognu`, metadata, and a historical `j` array.
+- Parametric fields add `mu` or `lognu`, metadata, and a stored `j` array.
   F10's stored `j` integrates u²; its optimization objective instead computes
   dissipation through the problem interface.
 
 See [problem definitions](../problems/README.md) for discrete objective integrals
-and the retained F3/F5 boundary conventions. Shape and dtype alone do not prove
+and the F3/F5 boundary conventions. Shape and dtype alone do not prove
 field identity; a changed field requires numerical validation before reuse as
 the reference dataset.

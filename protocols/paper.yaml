@@ -1,9 +1,8 @@
 # Default paper configuration for F1--F11.
-suite_version: '2026-10-08-paper'
+suite_version: paper
 protocol:
-  name: main
-  description: Default paper settings; F09-F11 use full-decision Top-3;
-    F06 uses the right-tail objective with HF70; F08 uses HF145.
+  name: paper
+  description: Paper experiment settings for F01-F11.
 run_groups:
   main:
     base_seed: 450

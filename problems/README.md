@@ -103,16 +103,15 @@ slightly from the exact continuous minimum. For the complete
 load–train–optimize workflow on a small field, use the
 [F6 demonstration](../examples/demo_f06.py).
 
-## Preserved boundary behavior
+## Boundary behavior
 
 **F3 (f03).** The generator advances the interior reaction–diffusion nodes with
 explicit Euler. At initialization it copies the right endpoint and its adjacent
 node to their left counterparts. At positive time layers both endpoints remain
 zero, and the left adjacent node is overwritten by the right adjacent node after
 the interior update. The surrogate physics interface specifies equality of the
-boundary values only. This behavior is retained for compatibility; it is not a
-standard periodic finite-difference discretization and should not be described
-as enforcing both u and uₓ periodicity.
+boundary values only. This behavior is not a standard periodic finite-difference
+discretization and should not be described as enforcing both u and uₓ periodicity.
 
 **F5 (f05).** The generator holds both endpoints at zero after initialization;
 the right initial value differs from zero only by sine roundoff. The surrogate
@@ -121,7 +120,7 @@ value and without matching derivatives. Thus the data satisfy a more specific
 boundary condition than the information supplied by this interface.
 
 These conventions define the implemented benchmark. Changing them produces a
-different data/problem version and requires separate numerical validation.
+different numerical problem and requires separate numerical validation.
 
 ## Other numerical details
 
@@ -134,7 +133,7 @@ different data/problem version and requires separate numerical validation.
   It satisfies `u_t+0.5u_x-0.0005u_xx=s` with the explicitly implemented source
   and exact IC/BC values. The array samples that expression; its interpolation
   is still approximate. The right-side 5% response objective has continuous minimum 0 at
-  `(0.1+0.1 sqrt(log(20)),0.7)`; the archived field is unchanged.
+  `(0.1+0.1 sqrt(log(20)),0.7)`.
 - **F7:** the sign is **Δu=f**, with
   `f=20(20+x₁²+x₂²)sin(2πx₁)sin(4πx₂)`. Outer BC is 0.2; hole-wall BC is 1.
   Disk centers/radii are `(4.3,3.5,0.5)`, `(1.5,1.2,0.4)`, `(2.2,2.7,0.6)` and

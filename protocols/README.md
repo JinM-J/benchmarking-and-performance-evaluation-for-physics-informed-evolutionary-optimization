@@ -1,13 +1,11 @@
 # Experiment configuration
 
-[`main.yaml`](main.yaml) is the default paper configuration for F1-F11, version
-`2026-10-08-paper`. It includes budgets, surrogate parameters, evaluation grids and
-repeat schedules. Run commands from the repository root; use `--dry-run` to
+[`paper.yaml`](paper.yaml) defines the paper experiment configuration for
+F1–F11, including budgets, surrogate parameters, evaluation grids and repeat
+schedules. Run commands from the repository root; use `--dry-run` to
 inspect a schedule before starting experiments.
 
-Single-run and batch commands default to this configuration. Its F6 and F8
-settings are the fixed settings for the current paper experiments. Batch
-reproduction defaults to the `main` group: 30 runs with seeds 450-479.
+Batch reproduction uses the `main` group: 30 runs with seeds 450–479.
 The reduced installation demonstration is configured separately.
 
 ## Search and state-label budgets
@@ -39,9 +37,9 @@ optimization label budget. See [evaluation conventions](../methods/README.md#bud
 
 ## F6
 
-The current objective targets the right-side 5% packet response. The continuous
+The objective targets the right-side 5% packet response. The continuous
 reference point is `(0.1 + 0.1 * sqrt(log(20)), 0.7)`, with objective zero.
-The PDE and stored field are unchanged. [The problem definition](../docs/problem_definitions.md#f6)
+[The problem definition](../docs/problem_definitions.md#f6)
 states the objective, derivation and interpolation distinction.
 
 PINN, PINO and MLP use **100 steps per fit**. F6 has no additional algebraic
@@ -69,7 +67,7 @@ families, so this configuration is not a matched-kernel physics-only ablation.
 
 ## Repeat schedules
 
-The `run_groups` section of `main.yaml` defines these schedules:
+The `run_groups` section of `paper.yaml` defines these schedules:
 
 | Group | Problems | Seeds | Methods / purpose |
 | --- | --- | --- | --- |
@@ -87,28 +85,25 @@ The main seeds were used during configuration selection; these results are
 not independent validation after tuning.
 
 ```bash
-python experiments/batch.py --protocol main --group main --problems f06,f08 --dry-run
-python experiments/batch.py --protocol main --group optimizers --dry-run
-python experiments/batch.py --protocol main --group constraints --dry-run
-python experiments/batch.py --protocol main --group residuals --dry-run
-python experiments/batch.py --protocol main --group illustrations --dry-run
+python experiments/batch.py --protocol paper --group main --problems f06,f08 --dry-run
+python experiments/batch.py --protocol paper --group optimizers --dry-run
+python experiments/batch.py --protocol paper --group constraints --dry-run
+python experiments/batch.py --protocol paper --group residuals --dry-run
+python experiments/batch.py --protocol paper --group illustrations --dry-run
 ```
 
 Remove `--dry-run` to execute. Group outputs default to `results/<group>/`;
 `--output-root` selects another empty location. Explicit `--methods`, `--runs`
-and `--base-seed` override the schedule. Omitting `--group` with the default
-`main` protocol selects the paper's `main` group. Single-run and batch main
+and `--base-seed` override the schedule. Omitting `--group` with the `paper`
+protocol selects the `main` group. Single-run and batch main
 outputs share `results/main/`, which is also the aggregator's default.
-Other protocols retain their one-run batch default unless a group is selected.
+Other protocols use a one-run batch default unless a group is selected.
 Summarize the main group with:
 
 ```bash
 python experiments/aggregate.py
 ```
 
-Every new run saves the complete `protocol_config`, applied `surrogate_config`,
-actual HF counts, protocol SHA256 and suite version in `resolved_config.yaml`.
-Changing a configuration requires a new version and separate result directory.
-The older [archived-result indexes](../reproduction/README.md#archive-version)
-remain tied to their original code version and do not describe the current
-F6/F8 experiments. `demo_f06.yaml` is a reduced installation example.
+Each run saves the complete `protocol_config`, applied `surrogate_config`,
+actual HF counts and protocol SHA256 in `resolved_config.yaml`.
+`demo_f06.yaml` is a reduced installation example.

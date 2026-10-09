@@ -23,18 +23,9 @@ python reproduction/evaluate_checkpoint.py --snapshot /path/to/snapshot \
   filename recorded in that snapshot. This command does not train the model.
 
 `metadata/` contains the run indexes, checksums, plot seeds and comparison values
-needed by these scripts. Original artifact paths and problem identities are
-preserved; output problem IDs use the current F1–F11 numbering.
+for the supplied artifacts. Output problem IDs use F1–F11. Reproduction uses
+the configurations, problem identities and fingerprints recorded with each
+artifact; these records determine which inputs belong together.
 
-## Archive version
-
-The included run indexes, source fingerprints and expected residual aggregates
-describe the experiment version at commit
-[`5139408`](https://github.com/JinM-J/benchmarking-and-performance-evaluation-for-physics-informed-evolutionary-optimization/tree/5139408).
-Use that code version when replaying its saved models and archived runs.
-
-The current F6 objective and F8 protocol are specified in `problems/f06.py`,
-`problems/f08.py` and `protocols/main.yaml`. The existing indexes do not describe
-these updated F6/F8 experiments; their original results and checksums have not
-been relabeled. Large fields, saved models and run outputs are supplied
-separately from this source repository.
+Large fields, saved models and run outputs are supplied separately from this
+source repository.

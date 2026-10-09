@@ -90,7 +90,7 @@ The [data manifest](dataset/reference_manifest.json) records the required files,
 sizes, shapes and checksums.
 
 ```bash
-python experiments/run.py --problem f01 --method gp_de --protocol main --seed 450
+python experiments/run.py --problem f01 --method gp_de --protocol paper --seed 450
 python experiments/batch.py --dry-run
 python experiments/aggregate.py
 ```
@@ -107,10 +107,6 @@ The [reproduction scripts](reproduction/README.md) rebuild objective tables,
 convergence figures and residual summaries from separately supplied archived
 runs, and evaluate saved surrogate models. This workflow reads existing
 artifacts rather than repeating optimization.
-
-Archive indexes are tied to their recorded code version. Follow
-[reproduction versioning](reproduction/README.md#archive-version) when replaying
-them; they do not describe all experiments under the current configuration.
 
 ## Experiment configuration
 
@@ -138,7 +134,7 @@ same total HF budget.
 
 Surrogate settings, including kernel parameters, network architectures, training
 steps, loss weights and learning rates, are specified per problem in
-[`protocols/main.yaml`](protocols/main.yaml). The
+[`protocols/paper.yaml`](protocols/paper.yaml). The
 [configuration guide](protocols/README.md) documents these settings and the
 main, optimizer, constraint, residual and illustration schedules. Residual and
 illustration runs are separate from the 30-run main statistics.

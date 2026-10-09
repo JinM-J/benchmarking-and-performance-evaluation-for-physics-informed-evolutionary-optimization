@@ -30,8 +30,8 @@ state labels.
 
 ## Budget and reporting
 
-The `main` preset counts **state labels**, including for the three parametric
-problems. Its per-problem budgets are specified in `protocols/main.yaml`. At each online
+The `paper` preset counts **state labels**, including for the three parametric
+problems. Its per-problem budgets are specified in `protocols/paper.yaml`. At each online
 update the parametric problems preserve the selected complete `(x,t,parameter)`
 decisions. `demo_f06` provides a reduced configuration for the installation example.
 

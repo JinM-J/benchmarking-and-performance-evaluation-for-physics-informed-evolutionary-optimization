@@ -18,7 +18,7 @@ MAIN_METHODS = ["gp_de", "pigp_de", "pinn_de", "rbfn_de", "mlp_de",
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--protocol", default="main")
+    ap.add_argument("--protocol", default="paper")
     ap.add_argument("--group", help="Run group: main, optimizers, constraints, residuals or illustrations; default: main for the paper protocol")
     ap.add_argument("--problems")
     ap.add_argument("--methods")
@@ -32,7 +32,7 @@ def main():
     protocol_path = ROOT / "protocols" / f"{args.protocol}.yaml"
     document = yaml.safe_load(protocol_path.read_text(encoding="utf-8"))
     groups = document.get("run_groups", {})
-    if args.group is None and args.protocol == "main":
+    if args.group is None and args.protocol == "paper":
         args.group = "main"
     if args.group and args.group not in groups:
         ap.error(f"Unknown run group {args.group!r}; available: {list(groups)}")

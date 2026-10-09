@@ -8,10 +8,9 @@ The following sections present the manuscript's problem descriptions, PDEs,
 initial/boundary conditions, objectives, constraints and reference solutions.
 Implementation conventions are stated separately within each problem.
 
-**Figure version:** F6 panels updated on 8 October 2026; the other
-figures were updated on 29 September 2026 using the stored reference
-fields. Variable labels and representative reference markers follow the
-manuscript. The [problem gallery](problem_gallery.md) describes plotting
+Figures use the stored reference fields. Variable labels and representative
+reference markers follow the manuscript. The
+[problem gallery](problem_gallery.md) describes plotting
 conventions, including F2's state-surface display band. The definitions and
 reference calculations state the numerical formulation and verification scope.
 
@@ -505,13 +504,13 @@ The [reference script](../reference/f06.py) checks the independent manufactured 
 
 ### Reference data and implementation conventions
 
-The [data generator](../dataset/generate_f06.py) samples the exact expression rather than numerically integrating a PDE. Its base grid contains 1,024 spatial nodes and 401 time nodes. Refinement factor $r$ produces $(1023r+1)\times(400r+1)$ nodes; the default $r=24$ gives `(24553,9601)`. The file `f06.npz` contains `x`, `t`, `u` in `(x,t)` order, and `meta_json` recording the constants and packet center. The archived `reference_point` is the packet center `(0.1,0.7)`, not the minimizer of the current objective. Newly generated metadata additionally records `optimization_reference_point` and the response threshold; the PDE expression and grid are unchanged. The problem checks the attached data metadata before objective evaluation.
+The [data generator](../dataset/generate_f06.py) samples the exact expression rather than numerically integrating a PDE. Its base grid contains 1,024 spatial nodes and 401 time nodes. Refinement factor $r$ produces $(1023r+1)\times(400r+1)$ nodes; the default $r=24$ gives `(24553,9601)`. The file `f06.npz` contains `x`, `t`, `u` in `(x,t)` order, and `meta_json` recording the constants and packet center. The metadata field `reference_point` identifies the packet center `(0.1,0.7)`. The optimization reference point is `(0.1+0.1 sqrt(log(20)),0.7)`, with response threshold 0.05; metadata may also record it as `optimization_reference_point`. The problem checks the attached data metadata before objective evaluation.
 
 Stored-field evaluation uses linear interpolation. Consequently, the sampled field has interpolation error even though the expression being sampled is exact. The continuous value $F_6^\ast=0$ is not a certificate that the interpolated field attains zero at the same point. The optional dataset mode in the reference script checks metadata and the objective API using the exact provider; it does not read or validate the full stored field.
 
 The local objective depends on the small feature after subtraction of the background. Global state-prediction error and local optimization accuracy therefore measure different properties. Comparative model performance must be assessed from the experimental results.
 
-The main configuration uses 20 initial state labels, a population of 100, 100 generations, and five new labels every ten generations (70 labels total). PINN, PINO and MLP each use 100 training steps per fit. All settings are provided in [the main configuration](../protocols/main.yaml).
+The paper configuration uses 20 initial state labels, a population of 100, 100 generations, and five new labels every ten generations (70 labels total). PINN, PINO and MLP each use 100 training steps per fit. All settings are provided in [the paper configuration](../protocols/paper.yaml).
 
 See the [dataset instructions](../dataset/README.md) and [reference instructions](../reference/README.md) for usage.
 
@@ -657,7 +656,7 @@ The initial expression has different endpoint limits at $0$ and $2$; its periodi
 
 The reference loader uses linear interpolation with periodic spatial wrapping. It appends the first spatial row at $x_1=2$ to close the half-open grid and interpolates through the seam. Time queries are clipped to the stored interval. At $t=0$, it evaluates the prescribed initial expression after wrapping the spatial coordinate. Numerical field error, seam behavior, and tolerance-band optimality remain separate from the exact algebraic calculation of $3/4$.
 
-The main configuration uses 100 initial state labels, a population of 100, 150 generations, and three new labels every ten generations (145 labels total). GP uses a Matérn 3/2 kernel without mean centering; PIGP also disables mean centering. PINN/PINO use 300 training steps per fit and MLP uses 500. Fixed model, loss and kernel settings are provided in [the main configuration](../protocols/main.yaml). The two self-managed baselines use their own sampling rules under the same 145-label budget.
+The paper configuration uses 100 initial state labels, a population of 100, 150 generations, and three new labels every ten generations (145 labels total). GP uses a Matérn 3/2 kernel without mean centering; PIGP also disables mean centering. PINN/PINO use 300 training steps per fit and MLP uses 500. Fixed model, loss and kernel settings are provided in [the paper configuration](../protocols/paper.yaml). The two self-managed baselines use their own sampling rules under the same 145-label budget.
 
 See the [dataset instructions](../dataset/README.md) and [reference instructions](../reference/README.md) for usage.
 
