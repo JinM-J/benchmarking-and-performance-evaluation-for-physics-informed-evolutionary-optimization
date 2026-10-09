@@ -114,11 +114,6 @@ them; they do not describe all experiments under the current configuration.
 
 ## Experiment configuration
 
-The default paper configuration is **2026-10-08-paper** in
-[`protocols/main.yaml`](protocols/main.yaml). Single-run and batch commands load
-it by default. The main comparison uses 30 runs per problem–method pair, with
-seeds 450–479.
-
 ### Search and state-label budgets
 
 | Problem | Initial labels | Population | Generations | Update interval | Labels per update | Total HF labels |
