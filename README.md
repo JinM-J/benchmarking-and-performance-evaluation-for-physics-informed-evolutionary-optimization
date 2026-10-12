@@ -57,7 +57,7 @@ mathematical formulation and the manuscript's detailed explanation of these axes
 | [F7](docs/problem_definitions.md#f7) | Steady Poisson | $(x_1, x_2)$ | Branin-type objective; perforated spatial domain |
 | [F8](docs/problem_definitions.md#f8) | Kuramoto–Sivashinsky | $(x_1, t)$ | Quadratic objective; equality tolerance band |
 | [F9](docs/problem_definitions.md#f9) | Parametric reaction–diffusion | $(x, t, \eta)$ | Goldstein–Price-type objective with local state and state integral |
-| [F10](docs/problem_definitions.md#f10) | Parametric Burgers | $(x_1, t, \ln\eta)$ | Shifted Rosenbrock objective with state and dissipation |
+| [F10](docs/problem_definitions.md#f10) | Parametric Burgers | $(x_1, t, \eta)$ | Shifted Rosenbrock objective with state and dissipation |
 | [F11](docs/problem_definitions.md#f11) | Parametric forced heat | $(x_1, t, \eta)$ | Ackley-type objective with state and input work |
 
 The [full problem definitions](docs/problem_definitions.md) give all objectives,
