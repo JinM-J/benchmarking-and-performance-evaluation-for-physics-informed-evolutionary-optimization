@@ -6,10 +6,12 @@ Paper problems F1–F11 use `f01.npz`–`f11.npz`. Their generators are
 
 ## State access during optimization
 
-Reference fields are constructed offline using the methods listed below.
-During optimization, reference state values are queried from these stored arrays,
-typically by linear grid interpolation with problem-specific boundary handling.
-A candidate evaluation does not trigger a new PDE solve.
+In practical PDE-constrained optimization, state values must be obtained from
+the governing PDE. When candidate decisions change physical parameters or
+initial/boundary conditions, a new PDE solve is generally needed. For reproducible
+repeated comparisons, this benchmark constructs reference fields offline using
+the methods listed below and provides reference states through stored-field
+queries, typically linear grid interpolation with problem-specific boundary handling.
 
 F1–F8 query fixed fields. F9–F11 query precomputed parameter-dependent fields,
 interpolating over space, time and the parameter (`mu` or `lognu`); changing the
