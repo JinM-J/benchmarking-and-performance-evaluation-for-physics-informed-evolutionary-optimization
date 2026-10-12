@@ -52,8 +52,9 @@ surrogate fitness are diagnostic. F2 computes the sum of excesses beyond two
 0.1 equality bands; F8 computes the excess beyond a 0.001 band. The final `1e-4`
 threshold is additional to those bands.
 
-The aggregator reports the feasible-run objective mean and standard
-deviation (`ddof=0`), separately recording total and feasible counts. A run with
+The aggregator reports the feasible-run objective mean and sample standard
+deviation (`ddof=1`, denominator `n-1`), separately recording total and valid
+metric counts. Sample standard deviation is undefined for fewer than two valid runs. A run with
 no feasible archive entry has no feasible objective. Protocol and dataset filename
 remain part of each group key.
 

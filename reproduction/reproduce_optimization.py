@@ -106,10 +106,11 @@ def summarize(rows):
         row = dict(group=group, paper_problem=problem, method=method, n=len(runs),
                    feasible_runs=sum(r['feasible'] for r in runs))
         for metric in ('best_f', 'hf', 'runtime', 'train_t', 'infer_t', 'mse'):
-            values = np.asarray([r[metric] for r in runs], float)
+            values = np.asarray([r[metric] for r in runs
+                                 if metric != 'best_f' or r['feasible']], float)
             values = values[np.isfinite(values)]
             row.update({metric + '_mean': float(values.mean()) if len(values) else float('nan'),
-                        metric + '_std_ddof0': float(values.std(ddof=0)) if len(values) else float('nan'),
+                        metric + '_std_ddof1': float(values.std(ddof=1)) if len(values) > 1 else float('nan'),
                         metric + '_n': len(values)})
         summaries.append(row)
     return summaries
@@ -174,10 +175,10 @@ def main():
     write_csv(args.out / 'summary.csv', summaries)
     write_csv(args.out / 'convergence_all_runs.csv', curves)
     text = '# Reconstructed optimization results\n\n'
-    text += 'Feasible HF archive only; ddof=0. Conditional objective means are not paired performance comparisons.\n\n'
+    text += 'Feasible HF archive only; ddof=1. Conditional objective means are not paired performance comparisons.\n\n'
     text += '| Problem | Method | Feasible / n | Objective mean | Objective std |\n|---|---|---:|---:|---:|\n'
     for r in summaries:
-        text += f"| {r['paper_problem']} | {r['method']} | {r['feasible_runs']}/{r['n']} | {r['best_f_mean']:.8g} | {r['best_f_std_ddof0']:.8g} |\n"
+        text += f"| {r['paper_problem']} | {r['method']} | {r['feasible_runs']}/{r['n']} | {r['best_f_mean']:.8g} | {r['best_f_std_ddof1']:.8g} |\n"
     (args.out / 'tables.md').write_text(text, encoding='utf-8')
     if args.plot:
         plot_convergence(curves, args.out)

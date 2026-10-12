@@ -163,7 +163,10 @@ questions:
    does it produce on specified evaluation points?
 
 Result summaries report feasible-run counts and the mean and
-standard deviation of feasible objectives (`ddof=0`). Convergence trajectories
+sample standard deviation of feasible objectives (`ddof=1`, denominator `n-1`,
+where `n` is the number of valid feasible runs). Standard deviations for other
+metrics use their respective valid records. For `n < 2`, the sample standard
+deviation is undefined. Convergence trajectories
 use the consumed HF archive. Surrogate predictions and unconsumed
 final-population diagnostics do not determine the reported best objective.
 

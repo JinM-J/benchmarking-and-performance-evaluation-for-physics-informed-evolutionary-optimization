@@ -55,11 +55,12 @@ def aggregate_rows(rows):
         result.update(n=len(runs), feasible_runs=sum(r["feasible"] for r in runs),
                       feasible_rate=sum(r["feasible"] for r in runs) / len(runs))
         for metric in ("best_f", "hf", "runtime", "train_t", "infer_t", "mse"):
-            values = np.array([r[metric] for r in runs], dtype=float)
+            values = np.array([r[metric] for r in runs
+                               if metric != "best_f" or r["feasible"]], dtype=float)
             values = values[np.isfinite(values)]
             result[metric + "_n"] = len(values)
             result[metric + "_mean"] = float(values.mean()) if len(values) else float("nan")
-            result[metric + "_std_ddof0"] = float(values.std(ddof=0)) if len(values) else float("nan")
+            result[metric + "_std_ddof1"] = float(values.std(ddof=1)) if len(values) > 1 else float("nan")
         output.append(result)
     return output
 

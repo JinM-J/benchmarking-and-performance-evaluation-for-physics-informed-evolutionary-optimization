@@ -22,5 +22,11 @@ python reproduction/evaluate_checkpoint.py --snapshot /path/to/snapshot \
   recorded in that snapshot. This command does not train the model.
 
 `metadata/` contains run indexes and plot selections for the supplied artifacts.
+Run summaries use sample standard deviations (`ddof=1`), with a separate valid
+count for each metric; objective statistics include only feasible runs. Sample
+standard deviation is undefined for fewer than two valid runs.
+`metadata/residual_expected.csv` retains the original companion-artifact cohort.
+Its F6/F8 means predate the later selected batches; it is an archived reproduction
+reference, and must not replace the current paper's F6/F8 results.
 Output problem IDs use F1–F11. Large fields, saved models and run outputs are
 supplied separately from this source repository.

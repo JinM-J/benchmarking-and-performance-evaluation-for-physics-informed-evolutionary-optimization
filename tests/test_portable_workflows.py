@@ -61,7 +61,8 @@ class PortableWorkflowTests(unittest.TestCase):
         self.assertEqual(len(summary), 1)
         self.assertEqual(summary[0]["feasible_runs"], 2)
         self.assertEqual(summary[0]["best_f_mean"], 6.)
-        self.assertEqual(summary[0]["best_f_std_ddof0"], 1.)
+        self.assertEqual(summary[0]["best_f_n"], 2)
+        self.assertAlmostEqual(summary[0]["best_f_std_ddof1"], np.sqrt(2.))
 
 
 if __name__ == "__main__":

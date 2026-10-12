@@ -57,7 +57,7 @@ def csv_out(path, rows, fields=None):
 
 def markdown_table(rows):
     lookup = {(r["problem"], r["method"]): r for r in rows}
-    lines = ["# PDE residual RMSE", "", "Final-model evaluation, seeds 481–490. Each run supplies one PDE RMSE; entries are mean ± population standard deviation (ddof=0).", "",
+    lines = ["# PDE residual RMSE", "", "Final-model evaluation, seeds 481–490. Each run supplies one PDE RMSE; entries are mean ± sample standard deviation (ddof=1).", "",
              "GP, PIGP, PINN, RBFN and MLP use 128×128 test grids; PINO uses 64×64. Parametric problems use the original three fixed parameter slices. These are discrete residuals at stated resolutions, not evidence of continuous residual convergence. No cross-problem average is computed.", ""]
     for problems in (PROBLEMS[:4], PROBLEMS[4:8], PROBLEMS[8:]):
         lines += ["| Method (test grid) | " + " | ".join(PAPER[p] for p in problems) + " |",
@@ -99,7 +99,7 @@ def rebuild_conditions(artifacts):
                 summary.append(dict(problem=problem, paper_problem=PAPER[problem], method=method, metric=metric,
                                     evaluation_grid="64x64", n=len(values), expected=10,
                                     mean=float(np.mean(values)) if values else "",
-                                    std=float(np.std(values, ddof=0)) if values else "", ddof=0))
+                                    std=(float(np.std(values, ddof=1)) if np.size(values) > 1 else np.nan) if values else "", ddof=1))
     return per_run, summary, components, inputs
 
 
@@ -126,7 +126,7 @@ def main():
                 inputs.append(dict(path=relative.as_posix()))
             summary.append(dict(problem=problem, paper_problem=PAPER[problem], method=method,
                                 evaluation_grid=f"{grid}x{grid}", n=len(values),
-                                mean=float(np.mean(values)), std=float(np.std(values, ddof=0)), ddof=0))
+                                mean=float(np.mean(values)), std=(float(np.std(values, ddof=1)) if np.size(values) > 1 else np.nan), ddof=1))
     conditions = rebuild_conditions(args.artifacts) if args.include_conditions else None
     args.out.mkdir(parents=True, exist_ok=False)
     csv_out(args.out / "per_run.csv", rows)
@@ -141,10 +141,10 @@ def main():
             csv_out(args.out / "conditions_64_components.csv", components, fields)
         (args.out / "conditions_64_README.md").write_text(
             "# Initial/boundary errors from baseline 64-grid records\n\n"
-            "Seeds 481–490. The IC/BC point sets are separately defined in the original protocol; the 64-grid label identifies those baseline evaluations. Per-condition point counts are preserved in conditions_64_components.csv. Each quantity is summarized across runs with ddof=0. No 128-grid condition values are implied. Missing quantities remain blank, not zero. The corresponding PDE table uses its separately declared 128/64 resolutions.\n", encoding="utf-8")
+            "Seeds 481–490. The IC/BC point sets are separately defined in the original protocol; the 64-grid label identifies those baseline evaluations. Per-condition point counts are preserved in conditions_64_components.csv. Each quantity is summarized across runs with ddof=1. No 128-grid condition values are implied. Missing quantities remain blank, not zero. The corresponding PDE table uses its separately declared 128/64 resolutions.\n", encoding="utf-8")
     report = dict(status="complete", paper_problems=list(PAPER.values()), methods=list(METHODS), seeds=list(SEEDS),
                         n_runs=len(rows), n_groups=len(summary),
-                        standard_deviation_ddof=0,
+                        standard_deviation_ddof=1,
                         input_records=inputs,
                         conditions_64_included=conditions is not None,
                         condition_input_records=conditions[3] if conditions else [],
