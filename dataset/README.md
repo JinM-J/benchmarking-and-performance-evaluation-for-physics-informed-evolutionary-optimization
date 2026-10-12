@@ -4,6 +4,18 @@ Paper problems F1–F11 use `f01.npz`–`f11.npz`. Their generators are
 `generate_f01.py`–`generate_f11.py`. Precomputed arrays are distributed separately;
 [reference_manifest.json](reference_manifest.json) records their size, shape, and dtype.
 
+## State access during optimization
+
+Reference fields are constructed offline using the methods listed below.
+During optimization, reference state values are queried from these stored arrays,
+typically by linear grid interpolation with problem-specific boundary handling.
+A candidate evaluation does not trigger a new PDE solve.
+
+F1–F8 query fixed fields. F9–F11 query precomputed parameter-dependent fields,
+interpolating over space, time and the parameter (`mu` or `lognu`); changing the
+parameter therefore does not require a new solve. Surrogate-assisted search uses
+model predictions, while selected reference labels come from stored-field queries.
+
 ## Import and check
 
 Run from the repository root:
