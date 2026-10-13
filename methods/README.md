@@ -46,7 +46,7 @@ quadrature states from the reference interpolator outside the label counter.
 Reference metrics likewise do not consume label FE. These conventions describe
 the implementation; they do not establish equal full-solver cost between methods.
 
-The reported objective comes from `archive_real_obj/archive_real_vio`, selecting
+The raw objective comes from `archive_real_obj/archive_real_vio`, selecting
 finite entries with violation ≤`1e-4`. Final-population reference values and
 surrogate fitness are diagnostic. F2 computes the sum of excesses beyond two
 0.1 equality bands; F8 computes the excess beyond a 0.001 band. The final `1e-4`
@@ -57,6 +57,23 @@ deviation (`ddof=1`, denominator `n-1`), separately recording total and valid
 metric counts. Sample standard deviation is undefined for fewer than two valid runs. A run with
 no feasible archive entry has no feasible objective. Protocol and dataset filename
 remain part of each group key.
+
+Before aggregation, a feasible minimization result below a reliable reference
+optimum is reported as `F_reported = max(F_raw, F_ref)` **only when the improvement
+has verified feasibility-tolerance attribution**. Unverified cases retain the
+raw value and appear in a separate anomaly CSV. Per-run exports preserve the raw
+objective, selected decision and violation, and add the reported value, clipping
+flag and basis. Means, sample variances and sample SDs use `F_reported` with valid
+feasible `n`; clipping does not change FR. Constant samples have zero sample
+variance/SD when `n >= 2`. Existing raw trajectories, rankings and significance
+results retain their original definition.
+
+The confirmed F5 algebraic DE cohort (seeds 450–479) uses
+`F_ref = -5.508013271595`; all 30 values are clipped, giving this mean and zero
+sample variance/SD. Its [per-run reporting record](../reproduction/metadata/f5_algebra_reporting.csv)
+includes source archive hashes; that confirmation is not automatically extended
+to other runs. F8 attribution uses its documented equality-gap identity when
+the selected state, objective and violation can be checked.
 
 ## Literature baseline attribution
 

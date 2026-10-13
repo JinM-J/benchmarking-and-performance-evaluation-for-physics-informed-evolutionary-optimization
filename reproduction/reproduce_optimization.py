@@ -4,6 +4,7 @@ Object-valued db_history records are loaded from the companion artifacts. No PDE
 """
 import argparse
 import csv
+import hashlib
 import json
 import sys
 from collections import defaultdict
@@ -14,6 +15,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from core.numbering import LEGACY_NAMESPACE, paper_problem_id
+from evaluation.metrics.objective_reporting import annotate_run, objective_summary, REPORTING_NOTE
 
 ORDER = [f'f{i:02}' for i in range(1, 12)]
 PAPER = {p: f'F{i}' for i, p in enumerate(ORDER, 1)}
@@ -67,6 +69,19 @@ def load_run(path, expected):
         else:
             raise ValueError(f'Unrecognized archive semantics: {path}')
         value = best(obj, vio)
+        good = np.flatnonzero(np.isfinite(obj) & np.isfinite(vio) & (vio <= 1e-4))
+        best_index = int(good[np.argmin(np.asarray(obj)[good])]) if len(good) else None
+        decision, state = None, None
+        if best_index is not None:
+            if explicit and 'archive_dec' in saved.files:
+                decision = np.asarray(saved['archive_dec'][best_index], float).tolist()
+            elif source == 'legacy_hf_pool':
+                if 'dec_data' in history[-1]:
+                    decision = np.asarray(history[-1]['dec_data'][best_index], float).tolist()
+                if 'u_data' in history[-1]:
+                    state = float(np.asarray(history[-1]['u_data'][best_index]).reshape(-1)[0])
+            elif 'final_pop' in saved.files:
+                decision = np.asarray(saved['final_pop'][best_index], float).tolist()
         curves = []
         for index, snap in enumerate(history):
             if explicit or source == 'legacy_self_managed_full_archive':
@@ -87,27 +102,30 @@ def load_run(path, expected):
                    artifact_problem=artifact_problem,
                    method=method, seed=int(expected['seed']), feasible=np.isfinite(value),
                    best_f=value, hf=hf, archive_source=source,
+                   best_cv=float(np.asarray(vio)[best_index]) if best_index is not None else float('nan'),
+                   decision_raw=json.dumps(decision), best_x=decision[0] if decision else None,
+                   best_state=state, history_sha256=hashlib.sha256(path.read_bytes()).hexdigest(),
                    protocol=manifest['protocol'], dataset_file=manifest.get('dataset', {}).get('file') or 'online',
                    runtime=metrics.get('wall_time_total_sec', float('nan')),
                    train_t=budget.get('surrogate_train_time_sec', float('nan')),
                    infer_t=budget.get('surrogate_infer_time_sec', float('nan')),
                    mse=metrics.get('mse200_final', float('nan')))
-    return row, curves
+    return annotate_run(row), curves
 
 
 def summarize(rows):
     groups = defaultdict(list)
     for row in rows:
-        groups[row['group'], row['paper_problem'], row['method']].append(row)
+        groups[row['group'], row['paper_problem'], row['method']].append(annotate_run(row))
     summaries = []
     for (group, problem, method), runs in groups.items():
         assert len({r['seed'] for r in runs}) == len(runs)
         assert len({(r['protocol'], r['dataset_file']) for r in runs}) == 1
         row = dict(group=group, paper_problem=problem, method=method, n=len(runs),
                    feasible_runs=sum(r['feasible'] for r in runs))
-        for metric in ('best_f', 'hf', 'runtime', 'train_t', 'infer_t', 'mse'):
-            values = np.asarray([r[metric] for r in runs
-                                 if metric != 'best_f' or r['feasible']], float)
+        row.update(objective_summary(runs))
+        for metric in ('hf', 'runtime', 'train_t', 'infer_t', 'mse'):
+            values = np.asarray([r[metric] for r in runs], float)
             values = values[np.isfinite(values)]
             row.update({metric + '_mean': float(values.mean()) if len(values) else float('nan'),
                         metric + '_std_ddof1': float(values.std(ddof=1)) if len(values) > 1 else float('nan'),
@@ -172,18 +190,24 @@ def main():
     assert len(summaries) == (178 if args.include_supplements else 88)
     args.out.mkdir(parents=True, exist_ok=True)
     write_csv(args.out / 'per_run.csv', rows)
+    anomalies = [r for r in rows if r['reporting_status'] == 'below_reference_unverified']
+    with (args.out / 'objective_anomalies.csv').open('w', encoding='utf-8', newline='') as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(anomalies)
     write_csv(args.out / 'summary.csv', summaries)
     write_csv(args.out / 'convergence_all_runs.csv', curves)
     text = '# Reconstructed optimization results\n\n'
-    text += 'Feasible HF archive only; ddof=1. Conditional objective means are not paired performance comparisons.\n\n'
-    text += '| Problem | Method | Feasible / n | Objective mean | Objective std |\n|---|---|---:|---:|---:|\n'
+    text += REPORTING_NOTE + ' Conditional objective means are not paired performance comparisons. Convergence traces retain raw archive objectives.\n\n'
+    text += '| Problem | Method | Feasible / n | Reported objective: mean ± sample SD |\n|---|---|---:|---:|\n'
     for r in summaries:
-        text += f"| {r['paper_problem']} | {r['method']} | {r['feasible_runs']}/{r['n']} | {r['best_f_mean']:.8g} | {r['best_f_std_ddof1']:.8g} |\n"
+        text += f"| {r['paper_problem']} | {r['method']} | {r['feasible_runs']}/{r['n']} | {r['best_f_mean']:.8g} ± {r['best_f_std_ddof1']:.8g} |\n"
     (args.out / 'tables.md').write_text(text, encoding='utf-8')
     if args.plot:
         plot_convergence(curves, args.out)
     report = dict(status='complete', runs=len(rows), groups=len(summaries),
-                  new_optimizations=0, new_pde_solves=0)
+                  new_optimizations=0, new_pde_solves=0,
+                  clipped_runs=sum(r['was_clipped'] for r in rows), unverified_anomalies=len(anomalies))
     (args.out / 'reproduction_summary.json').write_text(json.dumps(report, indent=2) + '\n')
     print(json.dumps(report))
 

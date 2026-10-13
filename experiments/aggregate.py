@@ -1,6 +1,7 @@
 """Summarize schema-1.2 HF archives; no reference search or data loading."""
 import argparse
 import csv
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -10,6 +11,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from evaluation.metrics.constraint import FEASIBLE_TOL
+from evaluation.metrics.objective_reporting import annotate_run, objective_summary, REPORTING_NOTE
 
 
 def summarize_run(path):
@@ -20,16 +22,23 @@ def summarize_run(path):
             raise ValueError(f"Unsupported result-selection semantics: {path}")
         obj = np.asarray(data["archive_real_obj"], dtype=float).reshape(-1)
         vio = np.asarray(data["archive_real_vio"], dtype=float).reshape(-1)
+        decisions = np.asarray(data["archive_dec"], dtype=float) if "archive_dec" in data.files else None
     if obj.shape != vio.shape or obj.size == 0:
         raise ValueError(f"Empty or mismatched HF archive: {path}")
     finite = np.isfinite(obj) & np.isfinite(vio)
     feasible = finite & (vio <= FEASIBLE_TOL)
+    indices = np.flatnonzero(feasible)
+    index = int(indices[np.argmin(obj[indices])]) if len(indices) else None
+    decision = decisions[index].tolist() if index is not None and decisions is not None else None
     budget = manifest["budget"]
-    return {
+    row = {
         "problem": manifest["problem"], "method": manifest["method"],
         "protocol": manifest["protocol"], "dataset_file": manifest.get("dataset", {}).get("file") or "online",
         "seed": int(manifest["seed"]), "feasible": bool(feasible.any()),
         "best_f": float(obj[feasible].min()) if feasible.any() else float("nan"),
+        "best_cv": float(vio[index]) if index is not None else float("nan"),
+        "decision_raw": json.dumps(decision), "best_x": decision[0] if decision else None,
+        "best_state": None, "history_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
         "hf": budget["n_state_queries"] if budget.get("budget_kind", "state") == "state"
               else budget["n_parameter_queries"],
         "runtime": manifest["metrics"]["wall_time_total_sec"],
@@ -37,12 +46,14 @@ def summarize_run(path):
         "infer_t": budget["surrogate_infer_time_sec"],
         "mse": manifest["metrics"]["mse200_final"],
     }
+    return annotate_run(row)
 
 
 def aggregate_rows(rows):
     groups = {}
     seen = set()
     for row in rows:
+        row = annotate_run(row)
         key = tuple(row[k] for k in ("problem", "method", "protocol", "dataset_file"))
         run_key = key + (row["seed"],)
         if run_key in seen:
@@ -54,9 +65,9 @@ def aggregate_rows(rows):
         result = dict(zip(("problem", "method", "protocol", "dataset_file"), key))
         result.update(n=len(runs), feasible_runs=sum(r["feasible"] for r in runs),
                       feasible_rate=sum(r["feasible"] for r in runs) / len(runs))
-        for metric in ("best_f", "hf", "runtime", "train_t", "infer_t", "mse"):
-            values = np.array([r[metric] for r in runs
-                               if metric != "best_f" or r["feasible"]], dtype=float)
+        result.update(objective_summary(runs))
+        for metric in ("hf", "runtime", "train_t", "infer_t", "mse"):
+            values = np.array([r[metric] for r in runs], dtype=float)
             values = values[np.isfinite(values)]
             result[metric + "_n"] = len(values)
             result[metric + "_mean"] = float(values.mean()) if len(values) else float("nan")
@@ -86,6 +97,12 @@ def main():
         writer = csv.DictWriter(fp, fieldnames=aggregated[0].keys())
         writer.writeheader()
         writer.writerows(aggregated)
+    for suffix, records in (("per_run", rows), ("anomalies", [r for r in rows if r["reporting_status"] == "below_reference_unverified"])):
+        with output.with_name(output.stem + "_" + suffix + ".csv").open("w", encoding="utf-8", newline="") as fp:
+            writer = csv.DictWriter(fp, fieldnames=list(rows[0]))
+            writer.writeheader()
+            writer.writerows(records)
+    output.with_suffix(".md").write_text(REPORTING_NOTE + "\n", encoding="utf-8")
     print(f"{len(rows)} runs; {len(aggregated)} groups -> {output}")
 
 
